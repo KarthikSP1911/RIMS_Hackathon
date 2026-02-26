@@ -369,10 +369,16 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
+          {/* TESTING MODE: Auth temporarily disabled */}
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/history" element={<HistoryPagePlaceholder />} />
+          
+          {/* PRODUCTION: Uncomment to re-enable auth
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/history" element={<HistoryPagePlaceholder />} />
           </Route>
+          */}
         </Routes>
       </div>
     </Router>

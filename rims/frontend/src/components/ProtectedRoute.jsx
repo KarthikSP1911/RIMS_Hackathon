@@ -8,10 +8,11 @@ import { Navigate, Outlet } from 'react-router-dom';
 const ProtectedRoute = () => {
     const token = localStorage.getItem('respirascan_token');
 
-    if (!token) {
-        // Redirect to login if not authenticated
-        return <Navigate to="/login" replace />;
-    }
+    // TEMPORARILY DISABLED FOR TESTING - MongoDB not connected
+    // if (!token) {
+    //     // Redirect to login if not authenticated
+    //     return <Navigate to="/login" replace />;
+    // }
 
     // If authenticated, render the protected component (Outlet)
     return <Outlet />;
