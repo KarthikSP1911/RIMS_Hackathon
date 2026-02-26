@@ -115,7 +115,7 @@ const Hero = () => (
 );
 
 const HowItWorks = () => (
-  <section id="how-it-works" className="section-padding">
+  <section id="how-it-works" className="section-padding section-alt">
     <div className="container">
       <SectionHeader title="How It Works" subtitle="Three simple steps to understand your respiratory health markers." />
       <div className="card-grid">
@@ -140,7 +140,7 @@ const HowItWorks = () => (
 );
 
 const ConditionsDetected = () => (
-  <section id="conditions" className="section-padding" style={{ backgroundColor: '#f1f5f9' }}>
+  <section id="conditions" className="section-padding">
     <div className="container">
       <SectionHeader title="Conditions Detected" subtitle="Our AI is trained to identify acoustic signatures of various respiratory conditions." />
       <div className="card-grid">
@@ -172,7 +172,7 @@ const Crown = ({ size, color, ...props }) => (
 );
 
 const WhyChoose = () => (
-  <section id="benefits" className="section-padding">
+  <section id="benefits" className="section-padding section-alt">
     <div className="container">
       <SectionHeader title="Why Choose RespiraScan" />
       <div className="card-grid">
@@ -202,9 +202,9 @@ const WhyChoose = () => (
 );
 
 const PrivacySecurity = () => (
-  <section id="privacy" className="section-padding" style={{ backgroundColor: 'white' }}>
+  <section id="privacy" className="section-padding">
     <div className="container">
-      <div style={{ backgroundColor: '#f8fafc', padding: '4rem', borderRadius: 'var(--border-radius)', border: '1px solid #e2e8f0' }}>
+      <div style={{ backgroundColor: 'white', padding: '4.5rem', borderRadius: 'var(--border-radius)', border: '1px solid #f1f5f9', boxShadow: 'var(--shadow-lg)' }}>
         <SectionHeader title="Security First, Always" subtitle="We treat your health data with the highest level of confidentiality." />
         <div className="privacy-grid">
           <div className="privacy-card">
