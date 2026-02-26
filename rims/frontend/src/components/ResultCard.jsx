@@ -6,7 +6,8 @@ const ResultCard = ({ result }) => {
     const { risk_level, confidence, explanation, suggestions } = result;
 
     const getRiskStyles = () => {
-        switch (risk_level.toLowerCase()) {
+        const level = risk_level.toLowerCase().replace(' risk', '').trim();
+        switch (level) {
             case 'low': return {
                 color: '#10b981',
                 bg: '#ecfdf5',
@@ -33,7 +34,7 @@ const ResultCard = ({ result }) => {
                 bg: '#eff6ff',
                 border: '#dbeafe',
                 icon: Info,
-                label: 'Unknown Risk'
+                label: risk_level || 'Unknown Risk'
             };
         };
     };
