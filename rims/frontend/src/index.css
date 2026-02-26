@@ -833,3 +833,111 @@ h3 {
   color: var(--color-text-muted);
   margin-bottom: 2rem;
 }
+
+/* Global Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+
+/* Card Hover Elevation */
+.medical-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.medical-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+}
+
+/* Button Hover Scale */
+.btn-primary,
+.btn-secondary {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn-primary:hover,
+.btn-secondary:hover {
+  transform: scale(1.03);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Icon Hover Color */
+.icon-circle-blue:hover {
+  background-color: #c7d2fe;
+  /* lighter blue */
+}
+
+/* Pulse Loader Animation */
+@keyframes pulseHeart {
+  0% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+}
+
+.loader-heart {
+  animation: pulseHeart 1.5s infinite ease-in-out;
+}
+
+/* Skeleton Shimmer */
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+.skeleton {
+  background: #e2e8f0;
+  background: linear-gradient(90deg, #e2e8f0 0%, #f1f5f9 50%, #e2e8f0 100%);
+  background-size: 200px 100%;
+  animation: shimmer 1.5s infinite linear;
+  border-radius: 0.5rem;
+}
+
+.skeleton-circle {
+  border-radius: 50%;
+}
+
+/* Fullscreen Loader */
+.fullscreen-loader {
+  position: fixed;
+  inset: 0;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  opacity: 1;
+  transition: opacity 0.4s ease;
+}
+
+.fullscreen-loader.hidden {
+  opacity: 0;
+  pointer-events: none;
+}

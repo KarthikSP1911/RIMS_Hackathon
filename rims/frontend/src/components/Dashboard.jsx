@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import {
-    HeartPulse,
-    History,
     ArrowLeft,
     AlertCircle,
     RefreshCw
@@ -10,6 +8,7 @@ import UploadCard from './UploadCard';
 import ResultCard from './ResultCard';
 import LoadingSpinner from './LoadingSpinner';
 import HistoryChart from './HistoryChart';
+import { motion } from 'framer-motion';
 
 const Dashboard = () => {
     const [view, setView] = useState('upload'); // 'upload', 'loading', 'result', 'error'
@@ -37,7 +36,7 @@ const Dashboard = () => {
 
             const data = await response.json();
 
-            // Simulating a minor delay for better UX
+            // Simulate result loading to show state transitions
             setTimeout(() => {
                 setAnalysisResult({
                     risk_level: data.risk_level || 'Moderate',
@@ -50,7 +49,7 @@ const Dashboard = () => {
                     ]
                 });
                 setView('result');
-            }, 1500);
+            }, 3000); // 3s total steps reveal in LoadingSpinner
 
         } catch (err) {
             setErrorHeader('Analysis Failed');
@@ -65,77 +64,96 @@ const Dashboard = () => {
     };
 
     return (
-        <div className="dashboard-container">
-            {/* Dashboard Navbar */}
-            <nav className="dashboard-nav">
-                <div className="container">
-                    <div className="nav-brand">
-                        <HeartPulse size={24} color="var(--color-primary)" />
-                        <span>Respira<span className="brand-scan">Scan</span></span>
-                    </div>
-
-                    <div className="dashboard-links">
-                        <a href="#" className="dash-link active">Analyze</a>
-                        <a href="#" className="dash-link">History</a>
-                    </div>
-
-                    <div className="nav-actions">
-                        <button className="btn-signin">Sign In</button>
-                    </div>
-                </div>
-            </nav>
-
+        <div className="dashboard-page" style={{ paddingTop: '6rem', minHeight: '100vh', backgroundColor: '#f8fafc' }}>
             {/* Main Dashboard Content */}
             <main className="dashboard-main container">
-                <div className="dashboard-header">
-                    <h1>Respiratory Risk Analysis</h1>
-                    <p>Assess your breathing patterns using our advanced AI biomarkers.</p>
-                </div>
+                <motion.div
+                    className="dashboard-header"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    style={{ textAlign: 'center', marginBottom: '3rem' }}
+                >
+                    <h1 style={{ fontSize: '2.5rem', fontWeight: 800, color: '#0f172a', marginBottom: '0.5rem' }}>Respiratory Risk Analysis</h1>
+                    <p style={{ color: '#64748b', fontSize: '1.125rem' }}>Assess your breathing patterns using our advanced AI biomarkers.</p>
+                </motion.div>
 
                 <div className="dashboard-grid">
                     {view === 'upload' && (
-                        <div className="analyze-view fade-in">
+                        <motion.div
+                            className="analyze-view"
+                            initial={{ opacity: 0, scale: 0.98 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 0.4 }}
+                        >
                             <UploadCard onAnalyze={handleAnalyze} isAnalyzing={false} />
-                        </div>
+                        </motion.div>
                     )}
 
                     {view === 'loading' && (
-                        <div className="loading-view fade-in">
-                            <div className="card loading-card">
+                        <div className="loading-view fade-in-up">
+                            <div className="card loading-card" style={{ maxWidth: '600px', margin: '0 auto', padding: '3rem' }}>
                                 <LoadingSpinner message="Analyzing respiratory signals..." />
-                                <div className="loading-steps">
-                                    <div className="step active">Extracting acoustic features</div>
-                                    <div className="step">Running neural network analysis</div>
-                                    <div className="step">Generating risk assessment</div>
-                                </div>
                             </div>
                         </div>
                     )}
 
                     {view === 'result' && analysisResult && (
-                        <div className="result-view fade-in">
-                            <div className="result-actions">
-                                <button className="btn-text" onClick={resetAnalysis}>
+                        <div className="result-view fade-in-up">
+                            <div className="result-actions" style={{ marginBottom: '1.5rem' }}>
+                                <button
+                                    className="btn-text"
+                                    onClick={resetAnalysis}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '0.5rem',
+                                        color: 'var(--color-primary)',
+                                        fontWeight: 600,
+                                        background: 'none',
+                                        border: 'none',
+                                        cursor: 'pointer'
+                                    }}
+                                >
                                     <ArrowLeft size={16} />
                                     <span>Analyze New Sample</span>
                                 </button>
                             </div>
                             <ResultCard result={analysisResult} />
 
-                            <div style={{ marginTop: '2.5rem' }}>
-                                <HistoryChart />
-                            </div>
+                            <motion.div
+                                style={{ marginTop: '3.5rem' }}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 0.6 }}
+                            >
+                                <div className="card" style={{ padding: '2rem' }}>
+                                    <h3 style={{ marginBottom: '1.5rem', fontSize: '1.25rem', fontWeight: 700 }}>Risk Level Trend</h3>
+                                    <HistoryChart />
+                                </div>
+                            </motion.div>
                         </div>
                     )}
 
                     {view === 'error' && (
                         <div className="error-view fade-in">
-                            <div className="card error-card">
-                                <AlertCircle size={48} color="#ef4444" />
-                                <h2>{errorHeader}</h2>
-                                <p>{errorMessage}</p>
-                                <button className="btn btn-primary" onClick={resetAnalysis}>
-                                    <RefreshCw size={16} />
+                            <div className="card error-card" style={{ textAlign: 'center', padding: '4rem' }}>
+                                <div style={{
+                                    width: '64px',
+                                    height: '64px',
+                                    backgroundColor: '#fef2f2',
+                                    borderRadius: '50%',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    margin: '0 auto 1.5rem'
+                                }}>
+                                    <AlertCircle size={32} color="#ef4444" />
+                                </div>
+                                <h2 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '1rem' }}>{errorHeader}</h2>
+                                <p style={{ color: '#64748b', marginBottom: '2rem' }}>{errorMessage}</p>
+                                <button className="btn btn-primary" onClick={resetAnalysis} style={{ margin: '0 auto' }}>
+                                    <RefreshCw size={16} style={{ marginRight: '0.5rem' }} />
                                     <span>Try Again</span>
                                 </button>
                             </div>

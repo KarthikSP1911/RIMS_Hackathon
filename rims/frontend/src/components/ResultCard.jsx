@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import { AlertTriangle, CheckCircle, Info, ArrowRight } from 'lucide-react';
 import RiskMeter from './RiskMeter';
 
@@ -42,10 +43,18 @@ const ResultCard = ({ result }) => {
     const Icon = styles.icon;
 
     return (
-        <div className="card result-card-container">
+        <motion.div
+            className="card result-card-container"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+        >
             <div className="result-header">
-                <div
+                <motion.div
                     className="risk-badge"
+                    initial={{ x: -10, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 0.3 }}
                     style={{
                         backgroundColor: styles.bg,
                         color: styles.color,
@@ -61,24 +70,35 @@ const ResultCard = ({ result }) => {
                 >
                     <Icon size={16} />
                     {styles.label.toUpperCase()}
-                </div>
-                <span className="timestamp">Analysis complete</span>
+                </motion.div>
+                <span className="timestamp" style={{ fontSize: '0.75rem', opacity: 0.5 }}>Analysis complete</span>
             </div>
 
             <div className="result-body">
-                <div className="result-summary">
+                <div className="result-summary" style={{ display: 'flex', alignItems: 'center', gap: '2.5rem' }}>
                     <RiskMeter confidence={confidence} riskLevel={risk_level} />
-                    <div className="risk-statement">
+                    <motion.div
+                        className="risk-statement"
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.4 }}
+                    >
                         <h2 style={{ fontSize: '2rem', fontWeight: '800', color: '#0f172a', marginBottom: '0.5rem' }}>
                             {risk_level.toUpperCase()}
                         </h2>
                         <p style={{ color: '#475569', fontSize: '1rem', lineHeight: '1.5' }}>
-                            The AI has detected {risk_level.toLowerCase()} acoustic indicators of respiratory abnormality in your sample.
+                            The AI has detected <span style={{ color: styles.color, fontWeight: 700 }}>{risk_level.toLowerCase()}</span> acoustic indicators of respiratory abnormality in your sample.
                         </p>
-                    </div>
+                    </motion.div>
                 </div>
 
-                <div className="explanation-section" style={{ marginTop: '2.5rem', borderTop: '1px solid #f1f5f9', paddingTop: '1.5rem' }}>
+                <motion.div
+                    className="explanation-section"
+                    style={{ marginTop: '2.5rem', borderTop: '1px solid #f1f5f9', paddingTop: '1.5rem' }}
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.6 }}
+                >
                     <h4 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1rem', fontWeight: '700', color: '#1e293b', marginBottom: '1rem' }}>
                         <Info size={18} />
                         Clinical Insights
@@ -99,9 +119,9 @@ const ResultCard = ({ result }) => {
                             </ul>
                         </div>
                     </div>
-                </div>
+                </motion.div>
             </div>
-        </div>
+        </motion.div>
     );
 };
 
