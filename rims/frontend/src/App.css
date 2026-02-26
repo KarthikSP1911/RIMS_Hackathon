@@ -1,0 +1,112 @@
+:root {
+  --primary-color: #646cff;
+  --bg-color: #1a1a1a;
+  --text-color: #f0f0f0;
+  --card-bg: #2a2a2a;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.App {
+  width: 100%;
+  max-width: 800px;
+  padding: 2rem;
+  text-align: center;
+}
+
+h1 {
+  font-size: 3.2rem;
+  line-height: 1.1;
+  margin-bottom: 3rem;
+  background: linear-gradient(135deg, #646cff 0%, #af40ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+p {
+  font-size: 1.25rem;
+  color: #888;
+  margin-bottom: 2rem;
+}
+
+button {
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(100, 108, 255, 0.4);
+}
+
+button:hover {
+  transform: translateY(-2px);
+  background-color: #747bff;
+  box-shadow: 0 6px 20px rgba(100, 108, 255, 0.6);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+.data-container {
+  margin-top: 3rem;
+  padding: 2rem;
+  background-color: var(--card-bg);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: left;
+  animation: fadeIn 0.5s ease-out;
+}
+
+pre {
+  background: #111;
+  padding: 1.5rem;
+  border-radius: 10px;
+  overflow-x: auto;
+  font-size: 0.9rem;
+  border: 1px solid #333;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+li {
+  background: rgba(100, 108, 255, 0.15);
+  padding: 0.5rem 1.2rem;
+  border-radius: 30px;
+  border: 1px solid rgba(100, 108, 255, 0.3);
+  color: #a5a9ff;
+  font-weight: 500;
+}
+
+.error {
+  color: #ff5252;
+  font-weight: bold;
+  background: rgba(255, 82, 82, 0.1);
+  padding: 1rem;
+  border-radius: 8px;
+  margin-top: 2rem;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
