@@ -18,60 +18,37 @@ Before you begin, ensure you have the following installed on your Windows machin
 
 ## 📥 Step 2: Installation
 
-Open your terminal (Command Prompt or PowerShell) in the workspace directory and follow these steps:
+Open the workspace directory in your file explorer and choose one of the following:
 
-### 1. Unified Installation (The Fast Way)
-Run the following command in the **root directory**:
+### 1. Automatic Setup (Windows Recommended)
+Double-click the file named **`setup.bat`** in the root folder.
+*   This will automatically install Node dependencies for all stacks and set up the Python virtual environment.
+
+### 2. Manual Installation
+If you prefer the command line, run:
 ```powershell
 npm run install:all
-```
-*Wait for it to finish. It will automatically install dependencies for the Frontend, Express, and create a Python virtual environment for FastAPI.*
-
-### 2. Manual Installation (If the above fails)
-If you prefer to install each part manually, run these in order:
-```powershell
-# Install Root Tools
-npm install
-
-# Install Frontend
-cd frontend
-npm install
-cd ..
-
-# Install Express Middleware
-cd backend-express
-npm install
-cd ..
-
-# Install FastAPI Backend
-cd backend-fastapi
-python -m venv venv
-.\venv\Scripts\pip install fastapi uvicorn requests pydantic-settings
-cd ..
 ```
 
 ---
 
 ## 🚀 Step 3: Running the Application
 
-You have two ways to start the entire system simultaneously:
+Once setup is complete, you can launch the entire ecosystem in separate terminal windows:
 
-### Option A: The One-Click Launch (Recommended)
-Double-click the file named **`run_all.bat`** in the root folder. 
-*   This will open **three separate windows** so you can see the logs for each service independently.
+### Option A: One-Click Launch
+Double-click **`run_all.bat`** in the root folder.
 
-### Option B: The Unified Terminal
+### Option B: Terminal Command
 In your root terminal, run:
 ```powershell
 npm run dev
 ```
-*This will run all services in a single window using `concurrently`.*
+*Note: This now triggers the batch runner for separate window logging.*
 
 ---
 
 ## 🌐 Accessing the Services
-
-Once everything is running, you can access the following:
 
 | Service | URL | Description |
 | :--- | :--- | :--- |
@@ -83,10 +60,11 @@ Once everything is running, you can access the following:
 
 ## 📁 Project Structure
 
-*   `/frontend` - React source code and UI styles.
-*   `/backend-express` - Node.js routes, controllers, and services.
-*   `/backend-fastapi` - Python neural engine and API logic.
-*   `run_all.bat` - Quick runner for Windows users.
+*   `/frontend` - React source code and UI styles (Enterprise SaaS theme).
+*   `/backend-express` - Node.js routes and controllers.
+*   `/backend-fastapi` - Python neural engine logic.
+*   `setup.bat` - Automated installation script.
+*   `run_all.bat` - Multi-terminal service runner.
 
 ---
 **Happy Coding!** 🚀

@@ -1,252 +1,292 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Shield, 
-  Activity, 
-  Database, 
-  Cpu, 
-  Globe, 
-  Zap, 
-  ArrowRight,
-  Menu,
-  Terminal,
-  Server
+import { motion } from 'framer-motion';
+import {
+  ShieldCheck,
+  Activity,
+  UploadCloud,
+  Waves,
+  Lock,
+  FileSearch,
+  CheckCircle,
+  Stethoscope,
+  HeartPulse,
+  Brain,
+  Shield,
+  Clock,
+  Touchpad,
+  Mail,
+  Info,
+  ChevronRight,
+  Menu
 } from 'lucide-react';
 import './App.css';
 
-// --- Components ---
+// --- Shared Components ---
+
+const SectionHeader = ({ title, subtitle }) => (
+  <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+    <h2 className="text-balance">{title}</h2>
+    {subtitle && <p style={{ color: 'var(--color-text-muted)', maxWidth: '700px', margin: '0 auto', fontSize: '1.125rem' }}>{subtitle}</p>}
+  </div>
+);
+
+const BenefitCard = ({ icon: Icon, title, description }) => (
+  <div className="card">
+    <div className="icon-wrapper">
+      <Icon size={24} />
+    </div>
+    <h3>{title}</h3>
+    <p style={{ fontSize: '0.875rem', color: 'var(--color-text-body)' }}>{description}</p>
+  </div>
+);
+
+// --- Sections ---
 
 const Navbar = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
-  
+  const [scrolled, setScrolled] = useState(false);
+
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 0);
+    const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'nav-blur py-3' : 'py-5'}`}>
-      <div className="container-custom flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Shield className="text-indigo-500 w-6 h-6" />
-          <span className="text-lg font-bold tracking-tight text-white">Sentinel<span className="text-indigo-500">Node</span></span>
-        </div>
-        
-        <div className="hidden md:flex items-center gap-8">
-          <a href="#features" className="text-sm font-medium text-slate-400 hover:text-white transition-colors">Features</a>
-          <a href="#monitor" className="text-sm font-medium text-slate-400 hover:text-white transition-colors">Monitoring</a>
-          <button className="text-sm font-medium text-slate-400 hover:text-white transition-colors">Sign In</button>
-          <button className="btn btn-primary text-sm py-2">Get Started</button>
+    <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
+      <div className="container navbar-content">
+        <a href="/" className="logo">
+          <HeartPulse size={28} color="var(--color-primary)" />
+          <span>Respira<span style={{ color: 'var(--color-primary)' }}>Scan</span></span>
+        </a>
+
+        <div className="nav-links">
+          <a href="#how-it-works" className="nav-link">How It Works</a>
+          <a href="#conditions" className="nav-link">Conditions</a>
+          <a href="#benefits" className="nav-link">Benefits</a>
+          <a href="#privacy" className="nav-link">Privacy</a>
+          <button className="btn btn-primary" style={{ padding: '0.5rem 1.25rem' }}>Start Analysis</button>
         </div>
 
-        <button className="md:hidden text-white">
-          <Menu className="w-6 h-6" />
+        <button className="md-only" style={{ background: 'none', border: 'none', display: 'none' }}>
+          <Menu size={24} />
         </button>
       </div>
     </nav>
   );
 };
 
-const Feature = ({ icon: Icon, title, desc }) => (
-  <div className="card-enterprise">
-    <div className="w-10 h-10 rounded-lg bg-indigo-500/10 flex items-center justify-center mb-6 border border-indigo-500/20">
-      <Icon className="w-5 h-5 text-indigo-500" />
+const Hero = () => (
+  <section className="hero">
+    <div className="hero-bg" style={{ backgroundImage: 'url("/respirascan_hero_bg.png")', backgroundSize: 'cover', backgroundPosition: 'center' }} />
+    <div className="container">
+      <motion.div
+        className="hero-content"
+        initial={{ opacity: 0, x: -30 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.8 }}
+      >
+        <span style={{
+          display: 'inline-block',
+          backgroundColor: '#eff6ff',
+          color: 'var(--color-primary)',
+          padding: '0.4rem 1rem',
+          borderRadius: '2rem',
+          fontSize: '0.75rem',
+          fontWeight: '700',
+          textTransform: 'uppercase',
+          letterSpacing: '0.05em',
+          marginBottom: '1rem'
+        }}>
+          AI-Powered Respiratory Screening
+        </span>
+        <h1 className="text-balance">AI-Based Respiratory Risk Detection from Voice</h1>
+        <p className="hero-subheading text-balance">
+          Upload a voice or breathing sample and receive an AI-powered respiratory risk assessment within seconds.
+        </p>
+        <div className="hero-ctas">
+          <button className="btn btn-primary">
+            Start Analysis <ChevronRight size={18} />
+          </button>
+          <button className="btn btn-secondary">Learn How It Works</button>
+        </div>
+      </motion.div>
     </div>
-    <h3 className="text-lg font-bold mb-2 text-white">{title}</h3>
-    <p className="text-slate-400 text-sm leading-relaxed">{desc}</p>
-  </div>
+  </section>
 );
 
-// --- Main App ---
+const HowItWorks = () => (
+  <section id="how-it-works" className="section-padding">
+    <div className="container">
+      <SectionHeader title="How It Works" subtitle="Three simple steps to understand your respiratory health markers." />
+      <div className="card-grid">
+        <BenefitCard
+          icon={UploadCloud}
+          title="1. Upload Audio Sample"
+          description="Record or upload a 10-second voice or breathing sample through our secure portal."
+        />
+        <BenefitCard
+          icon={Brain}
+          title="2. AI Extracts Acoustic Biomarkers"
+          description="Our neural network analyzes your audio for subtle acoustic markers associated with respiratory health."
+        />
+        <BenefitCard
+          icon={FileSearch}
+          title="3. Receive Risk Assessment"
+          description="Get a detailed report highlighting potential risks and recommended next steps."
+        />
+      </div>
+    </div>
+  </section>
+);
+
+const ConditionsDetected = () => (
+  <section id="conditions" className="section-padding" style={{ backgroundColor: '#f1f5f9' }}>
+    <div className="container">
+      <SectionHeader title="Conditions Detected" subtitle="Our AI is trained to identify acoustic signatures of various respiratory conditions." />
+      <div className="card-grid">
+        {[
+          { name: 'Asthma', icon: HeartPulse },
+          { name: 'COPD', icon: Activity },
+          { name: 'COVID-19', icon: Crown }, // Using Crown for Covid as a placeholder or import
+          { name: 'Pneumonia', icon: Stethoscope }
+        ].map((c, i) => (
+          <div key={i} className="card" style={{ textAlign: 'center' }}>
+            <c.icon size={40} color="var(--color-primary)" style={{ marginBottom: '1rem' }} />
+            <h3 style={{ marginBottom: '0' }}>{c.name}</h3>
+          </div>
+        ))}
+      </div>
+      <p className="disclaimer">
+        "This tool is for screening support only and does not replace professional medical diagnosis."
+      </p>
+    </div>
+  </section>
+);
+
+// Helper for COVID icon since Crown might not be the best
+const Crown = ({ size, color, ...props }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7Z" />
+    <path d="M12 17H12.01" />
+  </svg>
+);
+
+const WhyChoose = () => (
+  <section id="benefits" className="section-padding">
+    <div className="container">
+      <SectionHeader title="Why Choose RespiraScan" />
+      <div className="card-grid">
+        <BenefitCard
+          icon={Touchpad}
+          title="Non-invasive Screening"
+          description="No needles or physical tests. Analysis is performed entirely on your voice or breathing sound."
+        />
+        <BenefitCard
+          icon={Clock}
+          title="Fast AI-powered Results"
+          description="Receive your preliminary risk assessment in under 30 seconds after uploading."
+        />
+        <BenefitCard
+          icon={CheckCircle}
+          title="No Special Devices Required"
+          description="Works with any standard smartphone or laptop microphone. No medical-grade hardware needed."
+        />
+        <BenefitCard
+          icon={Lock}
+          title="Secure and Encrypted"
+          description="Your audio data is processed with enterprise-grade encryption and privacy protocols."
+        />
+      </div>
+    </div>
+  </section>
+);
+
+const PrivacySecurity = () => (
+  <section id="privacy" className="section-padding" style={{ backgroundColor: 'white' }}>
+    <div className="container">
+      <div style={{ backgroundColor: '#f8fafc', padding: '4rem', borderRadius: 'var(--border-radius)', border: '1px solid #e2e8f0' }}>
+        <SectionHeader title="Security First, Always" subtitle="We treat your health data with the highest level of confidentiality." />
+        <div className="privacy-grid">
+          <div className="privacy-card">
+            <ShieldCheck className="icon-small" size={24} />
+            <div>
+              <h3 style={{ fontSize: '1rem' }}>Secure Processing</h3>
+              <p style={{ fontSize: '0.8125rem' }}>Processing happens on secure servers using end-to-end encryption.</p>
+            </div>
+          </div>
+          <div className="privacy-card">
+            <Lock className="icon-small" size={24} />
+            <div>
+              <h3 style={{ fontSize: '1rem' }}>No Permanent Storage</h3>
+              <p style={{ fontSize: '0.8125rem' }}>Audio samples are analyzed and promptly deleted unless you choose to save them.</p>
+            </div>
+          </div>
+          <div className="privacy-card">
+            <CheckCircle className="icon-small" size={24} />
+            <div>
+              <h3 style={{ fontSize: '1rem' }}>User Consent</h3>
+              <p style={{ fontSize: '0.8125rem' }}>You maintain complete control over who accesses your screening reports.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+);
+
+const Footer = () => (
+  <footer className="footer">
+    <div className="container">
+      <div className="footer-top">
+        <div style={{ gridColumn: 'span 2' }}>
+          <div className="footer-logo">
+            <HeartPulse size={24} />
+            <span>RespiraScan</span>
+          </div>
+          <p style={{ maxWidth: '300px', fontSize: '0.875rem' }}>
+            Advancing respiratory health screening through the power of acoustic artificial intelligence.
+          </p>
+        </div>
+        <div className="footer-links">
+          <h4>Platform</h4>
+          <a href="#" className="footer-link-item">How it Works</a>
+          <a href="#" className="footer-link-item">Pricing</a>
+          <a href="#" className="footer-link-item">Science</a>
+        </div>
+        <div className="footer-links">
+          <h4>Company</h4>
+          <a href="#" className="footer-link-item">About</a>
+          <a href="#" className="footer-link-item">Contact</a>
+          <a href="#" className="footer-link-item">Privacy Policy</a>
+          <a href="#" className="footer-link-item">Terms</a>
+        </div>
+      </div>
+
+      <div className="footer-bottom">
+        <div className="footer-disclaimer-full">
+          <strong>MEDICAL DISCLAIMER:</strong> RespiraScan is a screening tool and should not be used as a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition.
+        </div>
+        <p style={{ fontSize: '0.75rem' }}>© 2026 RespiraScan Technologies Inc. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+);
 
 function App() {
-  const [nodeData, setNodeData] = useState(null);
-  const [fetching, setFetching] = useState(false);
-
-  const fetchNode = async () => {
-    setFetching(true);
-    try {
-      const resp = await fetch('http://localhost:5000/api/fastapi-data');
-      const data = await resp.json();
-      setNodeData(data);
-    } catch (err) {
-      console.error("Connection error:", err);
-    } finally {
-      setTimeout(() => setFetching(false), 800);
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-slate-950 text-white overflow-x-hidden">
+    <div className="App">
       <Navbar />
-
       <main>
-        {/* Hero Section */}
-        <section className="relative pt-32 pb-16 md:pt-40 md:pb-24">
-          <div className="container-custom">
-            <div className="max-w-4xl mx-auto text-center">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-              >
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[11px] font-bold uppercase tracking-wider mb-8">
-                  <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" />
-                  System Version 4.0.2
-                </div>
-                
-                <h1 className="text-4xl md:text-6xl font-extrabold mb-6 leading-tight tracking-tight text-white text-balance">
-                  Autonomous Urban Monitoring <br />
-                  <span className="text-indigo-500">at Metropolitan Scale.</span>
-                </h1>
-                
-                <p className="text-lg md:text-xl text-slate-400 mb-10 leading-relaxed max-w-2xl mx-auto">
-                  SentinelNode deploys decentralized neural clusters to monitor city health metrics with sub-millisecond precision.
-                </p>
-                
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                  <button className="btn btn-primary px-8 py-3.5 w-full sm:w-auto">
-                    Deploy Application
-                  </button>
-                  <button className="btn btn-secondary px-8 py-3.5 w-full sm:w-auto" onClick={fetchNode}>
-                    <Activity className="w-4 h-4 mr-1" /> Run Diagnostics
-                  </button>
-                </div>
-              </motion.div>
-            </div>
-          </div>
-        </section>
-
-        {/* Features Row */}
-        <section id="features" className="py-16 border-y border-white/5 bg-white/[0.01]">
-          <div className="container-custom">
-            <div className="grid md:grid-cols-3 gap-6">
-              <Feature 
-                icon={Cpu} 
-                title="Neural Mesh" 
-                desc="Distributed edge computing for real-time environmental data processing."
-              />
-              <Feature 
-                icon={Shield} 
-                title="Atomic Security" 
-                desc="Hardware-level encryption for critical metropolitan infrastructure."
-              />
-              <Feature 
-                icon={Globe} 
-                title="Global Sync" 
-                desc="Unified telemetry dashboard for cross-city safety orchestration."
-              />
-            </div>
-          </div>
-        </section>
-
-        {/* Console Section */}
-        <section id="monitor" className="py-24">
-          <div className="container-custom">
-            <div className="grid lg:grid-cols-12 gap-12 items-center">
-              <div className="lg:col-span-12">
-                <div className="bg-slate-900 border border-white/5 rounded-2xl overflow-hidden shadow-2xl">
-                  {/* Console Header */}
-                  <div className="px-6 py-4 bg-white/5 border-b border-white/5 flex items-center justify-between">
-                    <div className="flex gap-1.5">
-                      <div className="w-2.5 h-2.5 rounded-full bg-slate-700" />
-                      <div className="w-2.5 h-2.5 rounded-full bg-slate-700" />
-                      <div className="w-2.5 h-2.5 rounded-full bg-slate-700" />
-                    </div>
-                    <span className="text-[10px] font-bold text-slate-500 tracking-widest uppercase flex items-center gap-2">
-                       <Terminal className="w-3 h-3" /> Live Control Interface
-                    </span>
-                  </div>
-                  
-                  {/* Console Body */}
-                  <div className="p-8 md:p-12">
-                    <div className="flex flex-col md:flex-row justify-between gap-12">
-                      <div className="max-w-md">
-                        <h2 className="text-3xl font-bold mb-6 text-white text-balance">Unified Cross-Stack Telemetry.</h2>
-                        <ul className="space-y-4 mb-8">
-                          {[
-                            { tech: 'React', desc: 'Visualization layer with Atomic UI' },
-                            { tech: 'Express', desc: 'Secure middleware for node relay' },
-                            { tech: 'FastAPI', desc: 'Core neural engine for processing' }
-                          ].map((item, i) => (
-                            <li key={i} className="flex items-center gap-3 text-slate-400 text-sm">
-                              <Zap className="w-4 h-4 text-indigo-500" />
-                              <span><strong className="text-white">{item.tech}:</strong> {item.desc}</span>
-                            </li>
-                          ))}
-                        </ul>
-                        <button 
-                          className="btn btn-primary w-full md:w-auto" 
-                          onClick={fetchNode}
-                          disabled={fetching}
-                        >
-                          {fetching ? 'Syncing...' : 'Initiate Handshake'}
-                        </button>
-                      </div>
-
-                      <div className="flex-1 bg-black/40 rounded-xl p-6 font-mono text-xs border border-white/5 min-h-[250px] relative">
-                        <AnimatePresence mode="wait">
-                          {fetching ? (
-                            <motion.div 
-                              key="loading"
-                              initial={{ opacity: 0 }}
-                              animate={{ opacity: 1 }}
-                              className="space-y-3 animate-pulse"
-                            >
-                              <div className="h-2 w-1/2 bg-slate-800 rounded" />
-                              <div className="h-2 w-3/4 bg-slate-800 rounded" />
-                              <div className="h-2 w-2/3 bg-slate-800 rounded" />
-                            </motion.div>
-                          ) : nodeData ? (
-                            <motion.div 
-                              key="data"
-                              initial={{ opacity: 0, y: 10 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              className="text-indigo-300"
-                            >
-                              <div className="flex items-center gap-2 text-indigo-500 mb-4">
-                                <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
-                                <span className="uppercase text-[10px] font-bold">Signal Locked</span>
-                              </div>
-                              <pre className="whitespace-pre-wrap">{JSON.stringify(nodeData, null, 2)}</pre>
-                            </motion.div>
-                          ) : (
-                            <div className="h-full flex flex-col items-center justify-center opacity-30">
-                              <Server className="w-8 h-8 mb-4" />
-                              <p className="tracking-widest uppercase font-bold text-[10px]">Awaiting Connection</p>
-                            </div>
-                          )}
-                        </AnimatePresence>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
+        <Hero />
+        <HowItWorks />
+        <ConditionsDetected />
+        <WhyChoose />
+        <PrivacySecurity />
       </main>
-
-      {/* Footer */}
-      <footer className="py-12 border-t border-white/5">
-        <div className="container-custom">
-           <div className="flex flex-col md:flex-row justify-between items-center gap-8">
-              <div className="flex items-center gap-2">
-                 <Shield className="text-indigo-500 w-5 h-5" />
-                 <span className="font-bold text-white text-sm">SentinelNode</span>
-              </div>
-              <p className="text-slate-500 text-[11px] font-bold uppercase tracking-widest text-center">
-                 © 2026 Sentinel Lab. Unified Municipal Intelligence Network.
-              </p>
-              <div className="flex gap-6">
-                 <a href="#" className="text-slate-500 hover:text-white transition-colors"><Globe className="w-5 h-5" /></a>
-              </div>
-           </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
 
 export default App;
+
