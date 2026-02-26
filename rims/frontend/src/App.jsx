@@ -21,6 +21,10 @@ import './App.css';
 import FullScreenLoader from './components/FullScreenLoader';
 import Dashboard from './components/Dashboard';
 
+import Login from './components/Login';
+import Register from './components/Register';
+import ProtectedRoute from './components/ProtectedRoute';
+
 // --- Shared Components ---
 
 const fadeInScroll = {
@@ -65,12 +69,19 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const token = localStorage.getItem('respirascan_token');
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('respirascan_token');
+    localStorage.removeItem('respirascan_user');
+    navigate('/');
+  };
 
   const isHome = location.pathname === "/";
 
@@ -96,9 +107,12 @@ const Navbar = () => {
               <Link to="/history" className={`nav-link ${location.pathname === '/history' ? 'active' : ''}`}>History</Link>
             </>
           )}
-          <button className="btn btn-primary" onClick={() => navigate('/dashboard')} style={{ padding: '0.5rem 1.25rem' }}>
-            {location.pathname === '/dashboard' ? 'New Analysis' : 'Start Analysis'}
-          </button>
+
+          {token ? (
+            <button className="btn btn-secondary" onClick={handleLogout} style={{ padding: '0.5rem 1.25rem' }}>Logout</button>
+          ) : (
+            <button className="btn btn-primary" onClick={() => navigate('/login')} style={{ padding: '0.5rem 1.25rem' }}>Sign In</button>
+          )}
         </div>
 
         <button className="md-only" style={{ background: 'none', border: 'none', display: 'none' }}>
@@ -335,11 +349,13 @@ const LandingPage = () => (
 );
 
 const HistoryPagePlaceholder = () => (
-  <div className="container" style={{ padding: '8rem 2rem', textAlign: 'center' }}>
-    <Clock size={48} color="var(--color-primary)" style={{ marginBottom: '1.5rem' }} />
-    <h1>Analysis History</h1>
-    <p style={{ color: 'var(--color-text-muted)', marginTop: '1rem' }}>Your past reports will appear here when you are logged in.</p>
-  </div>
+  <ProtectedRoute>
+    <div className="container" style={{ padding: '8rem 2rem', textAlign: 'center' }}>
+      <Clock size={48} color="var(--color-primary)" style={{ marginBottom: '1.5rem' }} />
+      <h1>Analysis History</h1>
+      <p style={{ color: 'var(--color-text-muted)', marginTop: '1rem' }}>Your past reports will appear here when you are logged in.</p>
+    </div>
+  </ProtectedRoute>
 );
 
 function App() {
@@ -350,8 +366,13 @@ function App() {
         <Navbar />
         <Routes>
           <Route path="/" element={<LandingPage />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/history" element={<HistoryPagePlaceholder />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+
+          <Route element={<ProtectedRoute />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/history" element={<HistoryPagePlaceholder />} />
+          </Route>
         </Routes>
       </div>
     </Router>
