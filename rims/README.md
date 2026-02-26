@@ -1,61 +1,92 @@
-# Multi-Stack Project Setup
+# 🏙️ UrbanVoice Sentinel - Installation Guide
 
-A modern, high-performance architecture featuring a React frontend, an Express middleware backend, and a FastAPI core backend.
+Welcome to the **UrbanVoice Sentinel** project! This repository contains a professional three-stack architecture:
+1.  **Frontend**: React (Vite) - The user dashboard.
+2.  **Middleware**: Express.js - The API bridge.
+3.  **Core Engine**: FastAPI (Python) - The neural processing unit.
 
-## 🏗️ Architecture Overview
+---
 
-- **Frontend (React + Vite)**: Port 5173
-  - Modern UI with HSL colors, glassmorphism, and smooth animations.
-- **Middleware (Express.js)**: Port 5000
-  - Handles authentication, logging, and relays data between the UI and FastAPI.
-- **Core Engine (FastAPI)**: Port 8000
-  - High-performance Python backend for data processing and AI integration.
+## 🛠️ Step 1: Prerequisites
 
-## 🚀 Getting Started
+Before you begin, ensure you have the following installed on your Windows machine:
+*   [Node.js](https://nodejs.org/) (Version 18 or higher)
+*   [Python](https://www.python.org/downloads/) (Version 3.9 or higher)
+*   [Git](https://git-scm.com/downloads) (Optional, for cloning)
 
-### Prerequisites
+---
 
-- Node.js (v18+)
-- Python (3.9+)
+## 📥 Step 2: Installation
 
-### Installation
+Open your terminal (Command Prompt or PowerShell) in the workspace directory and follow these steps:
 
-1. Clone or copy this repository.
-2. In the root directory, install all dependencies:
-   ```bash
-   npm run install:all
-   ```
+### 1. Unified Installation (The Fast Way)
+Run the following command in the **root directory**:
+```powershell
+npm run install:all
+```
+*Wait for it to finish. It will automatically install dependencies for the Frontend, Express, and create a Python virtual environment for FastAPI.*
 
-### Running the Application
+### 2. Manual Installation (If the above fails)
+If you prefer to install each part manually, run these in order:
+```powershell
+# Install Root Tools
+npm install
 
-Start all三个 (three) stacks simultaneously:
-```bash
-npm run dev
+# Install Frontend
+cd frontend
+npm install
+cd ..
+
+# Install Express Middleware
+cd backend-express
+npm install
+cd ..
+
+# Install FastAPI Backend
+cd backend-fastapi
+python -m venv venv
+.\venv\Scripts\pip install fastapi uvicorn requests pydantic-settings
+cd ..
 ```
 
-The system will automatically start:
-- React Frontend: `http://localhost:5173`
-- Express Backend: `http://localhost:5000`
-- FastAPI Backend: `http://localhost:8000`
+---
+
+## 🚀 Step 3: Running the Application
+
+You have two ways to start the entire system simultaneously:
+
+### Option A: The One-Click Launch (Recommended)
+Double-click the file named **`run_all.bat`** in the root folder. 
+*   This will open **three separate windows** so you can see the logs for each service independently.
+
+### Option B: The Unified Terminal
+In your root terminal, run:
+```powershell
+npm run dev
+```
+*This will run all services in a single window using `concurrently`.*
+
+---
+
+## 🌐 Accessing the Services
+
+Once everything is running, you can access the following:
+
+| Service | URL | Description |
+| :--- | :--- | :--- |
+| **Frontend** | [http://localhost:5173](http://localhost:5173) | The main UI Dashboard. |
+| **Express API** | [http://localhost:5000](http://localhost:5000) | Middleware API endpoints. |
+| **FastAPI Core** | [http://localhost:8000](http://localhost:8000) | Python Core & [API Docs](/docs). |
+
+---
 
 ## 📁 Project Structure
 
-```text
-rims/
-├── frontend/             # React + Vite
-│   ├── src/              # UI components and logic
-│   └── package.json
-├── backend-express/      # Node.js + Express
-│   ├── index.js          # Entry point and proxy logic
-│   └── package.json
-├── backend-fastapi/      # Python + FastAPI
-│   ├── main.py           # Core logic and endpoints
-│   └── venv/             # Python Virtual Environment
-└── package.json          # Root scripts to orchestrate all stacks
-```
+*   `/frontend` - React source code and UI styles.
+*   `/backend-express` - Node.js routes, controllers, and services.
+*   `/backend-fastapi` - Python neural engine and API logic.
+*   `run_all.bat` - Quick runner for Windows users.
 
-## 🛠️ Key Features
-- **Modern UI**: Stylish dark mode with glassmorphic cards and hover effects.
-- **Proxy Communication**: UI calls Express, which then seamlessly proxies to FastAPI.
-- **Single Command Startup**: Run `npm run dev` to launch the entire ecosystem.
-- **Scalability**: Decoupled architecture allows each stack to scale independently.
+---
+**Happy Coding!** 🚀
