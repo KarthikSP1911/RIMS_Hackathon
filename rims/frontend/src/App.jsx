@@ -42,7 +42,7 @@ const BenefitCard = ({ icon: Icon, title, description }) => (
 
 // --- Sections ---
 
-const Navbar = () => {
+const Navbar = ({ onStart }) => {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -64,7 +64,7 @@ const Navbar = () => {
           <a href="#conditions" className="nav-link">Conditions</a>
           <a href="#benefits" className="nav-link">Benefits</a>
           <a href="#privacy" className="nav-link">Privacy</a>
-          <button className="btn btn-primary" style={{ padding: '0.5rem 1.25rem' }}>Start Analysis</button>
+          <button className="btn btn-primary" onClick={onStart} style={{ padding: '0.5rem 1.25rem' }}>Start Analysis</button>
         </div>
 
         <button className="md-only" style={{ background: 'none', border: 'none', display: 'none' }}>
@@ -75,7 +75,7 @@ const Navbar = () => {
   );
 };
 
-const Hero = () => (
+const Hero = ({ onStart }) => (
   <section className="hero">
     <div className="hero-bg" style={{ backgroundImage: 'url("/respirascan_hero_bg.png")', backgroundSize: 'cover', backgroundPosition: 'center' }} />
     <div className="container">
@@ -104,10 +104,10 @@ const Hero = () => (
           Upload a voice or breathing sample and receive an AI-powered respiratory risk assessment within seconds.
         </p>
         <div className="hero-ctas">
-          <button className="btn btn-primary">
+          <button className="btn btn-primary" onClick={onStart}>
             Start Analysis <ChevronRight size={18} />
           </button>
-          <button className="btn btn-secondary">Learn How It Works</button>
+          <a href="#how-it-works" className="btn btn-secondary">Learn How It Works</a>
         </div>
       </motion.div>
     </div>
@@ -140,23 +140,30 @@ const HowItWorks = () => (
 );
 
 const ConditionsDetected = () => (
-  <section id="conditions" className="section-padding">
+  <section id="conditions" className="section-conditions">
     <div className="container">
-      <SectionHeader title="Conditions Detected" subtitle="Our AI is trained to identify acoustic signatures of various respiratory conditions." />
-      <div className="card-grid">
+      <div className="header-dark">
+        <SectionHeader
+          title="Conditions Detected"
+          subtitle="Our AI is trained to identify acoustic signatures of various respiratory conditions."
+        />
+      </div>
+      <div className="conditions-grid">
         {[
           { name: 'Asthma', icon: HeartPulse },
           { name: 'COPD', icon: Activity },
-          { name: 'COVID-19', icon: Crown }, // Using Crown for Covid as a placeholder or import
+          { name: 'COVID-19', icon: Crown },
           { name: 'Pneumonia', icon: Stethoscope }
         ].map((c, i) => (
-          <div key={i} className="card" style={{ textAlign: 'center' }}>
-            <c.icon size={40} color="var(--color-primary)" style={{ marginBottom: '1rem' }} />
-            <h3 style={{ marginBottom: '0' }}>{c.name}</h3>
+          <div key={i} className="medical-card">
+            <div className="icon-circle-blue">
+              <c.icon size={32} />
+            </div>
+            <h3>{c.name}</h3>
           </div>
         ))}
       </div>
-      <p className="disclaimer">
+      <p className="disclaimer-small">
         "This tool is for screening support only and does not replace professional medical diagnosis."
       </p>
     </div>
@@ -272,12 +279,20 @@ const Footer = () => (
   </footer>
 );
 
+import Dashboard from './components/Dashboard';
+
 function App() {
+  const [currentView, setCurrentView] = useState('landing'); // 'landing' or 'dashboard'
+
+  if (currentView === 'dashboard') {
+    return <Dashboard onBack={() => setCurrentView('landing')} />;
+  }
+
   return (
     <div className="App">
-      <Navbar />
+      <Navbar onStart={() => setCurrentView('dashboard')} />
       <main>
-        <Hero />
+        <Hero onStart={() => setCurrentView('dashboard')} />
         <HowItWorks />
         <ConditionsDetected />
         <WhyChoose />
