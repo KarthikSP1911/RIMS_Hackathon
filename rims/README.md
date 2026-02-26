@@ -1,70 +1,87 @@
-# 🏙️ UrbanVoice Sentinel - Installation Guide
+# RespiraScan
 
-Welcome to the **UrbanVoice Sentinel** project! This repository contains a professional three-stack architecture:
-1.  **Frontend**: React (Vite) - The user dashboard.
-2.  **Middleware**: Express.js - The API bridge.
-3.  **Core Engine**: FastAPI (Python) - The neural processing unit.
+### AI-Powered Respiratory Risk Screening from Voice Biomarkers
 
 ---
 
-## 🛠️ Step 1: Prerequisites
+## Problem Statement
+Respiratory diseases often go undetected in early stages, leading to severe complications and increased healthcare costs. Traditional diagnostic methods like spirometry require clinical visits and specialized equipment, making frequent monitoring difficult for high-risk populations. There is a critical need for a non-invasive, accessible, and fast screening tool that can identify early acoustic biomarkers of respiratory distress using standard hardware.
 
-Before you begin, ensure you have the following installed on your Windows machine:
-*   [Node.js](https://nodejs.org/) (Version 18 or higher)
-*   [Python](https://www.python.org/downloads/) (Version 3.9 or higher)
-*   [Git](https://git-scm.com/downloads) (Optional, for cloning)
+## Solution Overview
+RespiraScan is an advanced screening platform that leverages Artificial Intelligence to analyze voice and breathing patterns. By utilizing neural networks trained on thousands of clinical audio samples, the system detects subtle acoustic signatures associated with conditions such as Asthma, COPD, and Pneumonia. Users can upload a short audio clip and receive a preliminary risk assessment in real-time, facilitating early intervention and data-driven healthcare decisions.
 
----
+## Key Features
+- **Acoustic Biomarker Analysis**: Extraction of spectral and temporal features from audio samples.
+- **AI-Driven Risk Scoring**: Neural network models built to identify subtle respiratory anomalies.
+- **Secure Clinical History**: Encrypted storage of past screenings for long-term health tracking.
+- **Real-time Processing**: Fast inference pipeline delivering results in seconds.
+- **Privacy-First Design**: Enterprise-grade encryption and temporary file processing.
 
-## 📥 Step 2: Installation
+## Tech Stack
 
-Open the workspace directory in your file explorer and choose one of the following:
+![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
+![Vite](https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![Express.js](https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB)
+![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)
+![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
+![PyTorch](https://img.shields.io/badge/PyTorch-%23EE4C2C.svg?style=for-the-badge&logo=PyTorch&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white)
+![JWT](https://img.shields.io/badge/JWT-black?style=for-the-badge&logo=JSON%20web%20tokens)
 
-### 1. Automatic Setup (Windows Recommended)
-Double-click the file named **`setup.bat`** in the root folder.
-*   This will automatically install Node dependencies for all stacks and set up the Python virtual environment.
+## Architecture
 
-### 2. Manual Installation
-If you prefer the command line, run:
-```powershell
-npm run install:all
+```mermaid
+graph TD
+    User([User]) -->|Uploads Audio| Frontend[React + Vite Frontend]
+    Frontend -->|JWT Auth + Form Data| Express[Express Gateway]
+    Express -->|Verify Token| DB[(MongoDB)]
+    Express -->|Forward Audio| FastAPI[FastAPI Analysis Node]
+    
+    subgraph AI Pipeline
+    FastAPI -->|Pre-processing| Librosa[Librosa / Feature Extraction]
+    Librosa -->|Mel Spectrograms| PyTorch[PyTorch Neural Network]
+    PyTorch -->|Probabilistic Class| RiskEngine[Risk Assessment Engine]
+    end
+    
+    RiskEngine -->|Screening Report| Express
+    Express -->|Store Report| DB
+    Express -->|Final Result| Frontend
+    Frontend -->|Display Assessment| User
 ```
 
----
+## API Overview
 
-## 🚀 Step 3: Running the Application
+### Authentication
+- `POST /api/auth/register`: Create a new clinical user account.
+- `POST /api/auth/login`: Authenticate and receive a JWT token.
 
-Once setup is complete, you can launch the entire ecosystem in separate terminal windows:
+### Analysis & Data
+- `POST /api/analyze`: Submit audio samples for AI risk assessment (Protected).
+- `GET /api/history`: Retrieve user-specific screening history (Protected).
+- `GET /api/fastapi-data`: Health check for neural infrastructure nodes.
 
-### Option A: One-Click Launch
-Double-click **`run_all.bat`** in the root folder.
+## Database Schema
+The system utilizes a Document-based schema in **MongoDB** :
+- **User Collection**: Stores hashed credentials, profile metadata, and security settings.
+- **Analysis Collection**: Linked to User IDs, storing audio metadata, extracted feature summaries, and AI inference results.
+- **Audit Logs**: Maintains system access records for compliance and security monitoring.
 
-### Option B: Terminal Command
-In your root terminal, run:
-```powershell
-npm run dev
-```
-*Note: This now triggers the batch runner for separate window logging.*
-
----
-
-## 🌐 Accessing the Services
-
-| Service | URL | Description |
-| :--- | :--- | :--- |
-| **Frontend** | [http://localhost:5173](http://localhost:5173) | The main UI Dashboard. |
-| **Express API** | [http://localhost:5000](http://localhost:5000) | Middleware API endpoints. |
-| **FastAPI Core** | [http://localhost:8000](http://localhost:8000) | Python Core & [API Docs](/docs). |
-
----
-
-## 📁 Project Structure
-
-*   `/frontend` - React source code and UI styles (Enterprise SaaS theme).
-*   `/backend-express` - Node.js routes and controllers.
-*   `/backend-fastapi` - Python neural engine logic.
-*   `setup.bat` - Automated installation script.
-*   `run_all.bat` - Multi-terminal service runner.
+## Security Measures
+- **HTTPS/TLS**: All data in transit is encrypted using modern cryptographic protocols.
+- **JWT Authentication**: Stateless session management with securely signed tokens.
+- **Password Hashing**: Industry-standard **bcrypt** (10 salt rounds) for sensitive credential storage.
+- **File Validation**: Strict multi-modal checking of audio types and sizes to prevent injection.
+- **Ephemeral Storage**: Audio files are processed in-memory or deleted immediately after feature extraction.
+- **Input Sanitization**: Robust validation of all API payloads to mitigate XSS and NoSQL injection.
 
 ---
-**Happy Coding!** 🚀
+
+## Medical Disclaimer
+**RespiraScan is a screening support tool and is NOT intended to provide a medical diagnosis.** The results generated by the AI model are probabilistic assessments based on acoustic biomarkers and should be reviewed by a qualified healthcare professional. Always seek the advice of a physician for any medical condition or treatment.
+
+## License
+This project is developed for clinical research and academic demonstration purposes. All rights reserved.
+
+---
+*Developed with precision for the future of respiratory digital health.*
