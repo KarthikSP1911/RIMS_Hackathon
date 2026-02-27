@@ -1,7 +1,7 @@
 from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
-    PROJECT_NAME: str = "FastAPI Core Service"
+    PROJECT_NAME: str = "UrbanVoice Sentinel: Neural Infrastructure"
     API_V1_STR: str = "/api/v1"
     
     class Config:

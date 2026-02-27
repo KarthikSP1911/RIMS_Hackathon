@@ -1,5 +1,5 @@
 """
-RespiraNet: Hybrid CNN-LSTM Architecture for Respiratory Risk Detection
+SentinelNet: Hybrid CNN-LSTM Architecture for Urban Acoustic Health Detection
 Target: AUC 0.93+, Sensitivity 0.91+
 """
 
@@ -8,15 +8,15 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 
-class RespiraNet(nn.Module):
+class SentinelNet(nn.Module):
     """
-    Hybrid CNN-LSTM architecture for respiratory audio classification
+    Hybrid CNN-LSTM architecture for urban acoustic classification
     Input: [batch, 13_mfcc, 100_timesteps]
     Output: [batch, 1] sigmoid probability
     """
     
     def __init__(self, input_channels=13, sequence_length=100):
-        super(RespiraNet, self).__init__()
+        super(SentinelNet, self).__init__()
         
         # CNN Layers for feature extraction
         self.conv1 = nn.Conv1d(input_channels, 32, kernel_size=3, padding=1)
@@ -119,10 +119,10 @@ class RespiraNet(nn.Module):
         return sum(p.numel() for p in self.parameters() if p.requires_grad)
 
 
-def create_respira_net():
-    """Factory function to create RespiraNet model"""
-    model = RespiraNet(input_channels=13, sequence_length=100)
-    print(f"RespiraNet created:")
+def create_sentinel_net():
+    """Factory function to create SentinelNet model"""
+    model = SentinelNet(input_channels=13, sequence_length=100)
+    print(f"SentinelNet created:")
     print(f"  Parameters: {model.count_parameters():,}")
     print(f"  Model size: {model.get_model_size():.2f} MB")
     return model
@@ -130,7 +130,7 @@ def create_respira_net():
 
 if __name__ == "__main__":
     # Test model architecture
-    model = create_respira_net()
+    model = create_sentinel_net()
     
     # Test forward pass
     batch_size = 4

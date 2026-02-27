@@ -1,6 +1,6 @@
-# RespiraScan ML Pipeline
+# UrbanVoice Sentinel ML Pipeline
 
-Complete production-ready ML pipeline for respiratory risk detection from voice audio.
+Complete production-ready ML pipeline for urban acoustic health signature detection.
 
 ## 🎯 Pipeline Overview
 
@@ -15,7 +15,7 @@ Complete production-ready ML pipeline for respiratory risk detection from voice 
 
 ## 📊 Model Performance
 
-- **Architecture**: Hybrid CNN-LSTM (RespiraNet)
+- **Architecture**: Hybrid CNN-LSTM (SentinelNet)
 - **Target AUC**: ≥0.93
 - **Target Sensitivity**: ≥0.91
 - **Inference Time**: <2 seconds total pipeline
@@ -38,7 +38,7 @@ python run_complete_pipeline.py
 
 This will:
 - Generate 10K synthetic samples
-- Train RespiraNet with 5-fold CV
+- Train SentinelNet with 5-fold CV
 - Convert to TorchScript
 - Generate demo audio samples
 - Test inference pipeline
@@ -47,11 +47,11 @@ This will:
 ### 3. Use Inference Pipeline
 
 ```python
-from inference_pipeline import RespiraNetInference
+from inference_pipeline import UrbanVoiceInference
 
 # Initialize
-inference = RespiraNetInference(
-    model_path='../models/respira_net_v1.pt',
+inference = UrbanVoiceInference(
+    model_path='../models/sentinel_net_v1.pt',
     scaler_path='../models/scaler.pkl'
 )
 
@@ -68,7 +68,7 @@ print(f"Processing Time: {result['processing_time_ms']}ms")
 ```
 ml/
 ├── dataset_generator.py      # Generate 10K synthetic samples
-├── model_architecture.py     # RespiraNet CNN-LSTM architecture
+├── model_architecture.py     # SentinelNet CNN-LSTM architecture
 ├── train_model.py            # 5-fold CV training pipeline
 ├── inference_pipeline.py     # Production inference (7 steps)
 ├── run_complete_pipeline.py  # Master execution script
@@ -78,8 +78,8 @@ ml/
 models/
 ├── X_mfcc.npy               # Training features (10K x 13 x 100)
 ├── y_risk.npy               # Training labels (10K binary)
-├── respira_net_v1.pt        # Trained PyTorch model
-├── respira_net_ts.pt        # TorchScript production model
+├── sentinel_net_v1.pt        # Trained PyTorch model
+├── sentinel_net_ts.pt        # TorchScript production model
 ├── scaler.pkl               # Feature normalization scaler
 ├── train_history.json       # CV scores and metrics
 ├── demo_results.json        # Test predictions
@@ -92,7 +92,7 @@ demo_audio/
 
 ## 🔬 Model Architecture
 
-**RespiraNet Hybrid CNN-LSTM:**
+**SentinelNet Hybrid CNN-LSTM:**
 
 ```
 Input: [batch, 13_mfcc, 100_timesteps]
@@ -118,9 +118,9 @@ Output: [batch, 1] probability
 
 | Probability | Risk Level | Recommendation |
 |------------|------------|----------------|
-| ≥0.85 | HIGH RISK | N95 mask recommended. Consult healthcare provider immediately. |
-| 0.60-0.84 | MODERATE RISK | Mask advised. Monitor symptoms closely. |
-| <0.60 | LOW RISK | Normal breathing patterns detected. Continue monitoring. |
+| ≥0.85 | HIGH RISK | High risk acoustic anomaly detected. Individual clinical assessment and environmental mitigation advised. |
+| 0.60-0.84 | MODERATE RISK | Moderate acoustic indicators detected. Monitor health trends and urban exposure closely. |
+| <0.60 | LOW RISK | Stable acoustic profile detected. Sentinel monitoring continues. |
 
 ## 🧪 Dataset Generation
 
@@ -193,7 +193,7 @@ python run_complete_pipeline.py
 **Issue**: Slow inference
 ```bash
 # Ensure TorchScript model is being used
-# Check: models/respira_net_ts.pt exists
+# Check: models/sentinel_net_ts.pt exists
 ```
 
 **Issue**: Poor accuracy
@@ -204,7 +204,7 @@ python run_complete_pipeline.py
 
 ## 📝 License
 
-MIT License - RespiraScan Technologies Inc. 2026
+MIT License - UrbanVoice Sentinel Technologies 2026
 
 ## ⚠️ Medical Disclaimer
 

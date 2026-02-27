@@ -3,7 +3,7 @@ import { HeartPulse } from 'lucide-react';
 
 /**
  * Fullscreen loader displayed while the app is initializing.
- * Shows a pulsing heart icon to match the RespiraScan branding.
+ * Shows a pulsing icon to match the UrbanVoice Sentinel branding.
  */
 const FullScreenLoader = () => {
     const [hidden, setHidden] = useState(false);

@@ -45,9 +45,9 @@ const UploadCard = ({ onAnalyze, isAnalyzing }) => {
 
     return (
         <div className="card upload-card-container">
-            <h3>Analyze Audio Sample</h3>
+            <h3>Urban Acoustic Feed</h3>
             <p style={{ color: 'var(--color-text-muted)', marginBottom: '1.5rem', fontSize: '0.875rem' }}>
-                Select a 10-second voice or breathing recording to detect potential respiratory risks.
+                Sync a 10-second acoustic sample to monitor real-time urban health indicators and acoustic biomarkers.
             </p>
 
             <div
@@ -98,7 +98,7 @@ const UploadCard = ({ onAnalyze, isAnalyzing }) => {
                 disabled={!file || isAnalyzing}
                 onClick={() => onAnalyze(file)}
             >
-                {isAnalyzing ? 'Analyzing respiratory signals...' : 'Start AI Analysis'}
+                {isAnalyzing ? 'Synchronizing sentinel data...' : 'Initialize Sentinel Search'}
             </button>
         </div>
     );

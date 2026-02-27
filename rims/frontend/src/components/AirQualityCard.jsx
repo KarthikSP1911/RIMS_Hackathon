@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Wind, MapPin, RefreshCw, AlertTriangle } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Wind, MapPin, RefreshCw, AlertTriangle, ChevronRight, Info, Clock, ShieldCheck } from 'lucide-react';
 
-// Cache for air quality data per location
 const locationCache = {};
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+const CACHE_DURATION = 5 * 60 * 1000;
 
-// Bangalore locations
 const LOCATIONS = [
     { id: 5574, name: 'City Railway Station' },
     { id: 6984, name: 'Hebbal' },
@@ -22,299 +21,135 @@ const AirQualityCard = ({ onDataUpdate }) => {
     const [error, setError] = useState(null);
 
     const fetchAirQuality = async (locationId) => {
-        // Check cache first
         const cached = locationCache[locationId];
         if (cached && (Date.now() - cached.timestamp < CACHE_DURATION)) {
             setAirData(cached.data);
             setLoading(false);
             return;
         }
-
         setLoading(true);
         setError(null);
-        
         try {
             const response = await fetch(`http://localhost:8000/air-quality?location_id=${locationId}`);
-
-            if (!response.ok) {
-                if (response.status === 429) {
-                    throw new Error('Rate limit exceeded. Please wait a moment.');
-                }
-                throw new Error('Failed to fetch air quality data');
-            }
-            
+            if (!response.ok) throw new Error(response.status === 429 ? 'Rate limit exceeded.' : 'Sync failed');
             const data = await response.json();
-            
             if (data.results && data.results.length > 0) {
-                // Sort by date to get the most recent measurement
-                const sortedResults = data.results.sort((a, b) => {
-                    const dateA = new Date(a.datetime?.utc || 0);
-                    const dateB = new Date(b.datetime?.utc || 0);
-                    return dateB - dateA;
-                });
-                
-                const measurement = sortedResults[0];
-                const locationName = LOCATIONS.find(loc => loc.id === locationId)?.name || 'Unknown';
-                
-                const airQualityData = {
-                    location: locationName,
+                const measurement = data.results.sort((a, b) => new Date(b.datetime?.utc) - new Date(a.datetime?.utc))[0];
+                const cleanData = {
+                    location: LOCATIONS.find(loc => loc.id === locationId)?.name || 'Unknown',
                     city: 'Bengaluru',
                     country: 'India',
                     value: Math.round(measurement.value * 10) / 10 || 'N/A',
                     unit: 'µg/m³',
-                    parameter: 'Air Quality',
                     lastUpdated: measurement.datetime?.utc || new Date().toISOString()
                 };
-                
-                // Cache the data
-                locationCache[locationId] = {
-                    data: airQualityData,
-                    timestamp: Date.now()
-                };
-                
-                setAirData(airQualityData);
-                
-                // Pass data to parent component
-                if (onDataUpdate) {
-                    onDataUpdate(airQualityData);
-                }
-            } else {
-                throw new Error('No air quality data available');
-            }
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
+                locationCache[locationId] = { data: cleanData, timestamp: Date.now() };
+                setAirData(cleanData);
+                if (onDataUpdate) onDataUpdate(cleanData);
+            } else throw new Error('No data');
+        } catch (err) { setError(err.message); } finally { setLoading(false); }
     };
 
-    useEffect(() => {
-        fetchAirQuality(selectedLocation);
-    }, [selectedLocation]);
+    useEffect(() => { fetchAirQuality(selectedLocation); }, [selectedLocation]);
 
-    const handleLocationChange = (e) => {
-        setSelectedLocation(Number(e.target.value));
-    };
-
-    const getAQILevel = (value) => {
-        if (value <= 12) return { level: 'Good', color: '#10b981', bg: '#d1fae5' };
-        if (value <= 35.4) return { level: 'Moderate', color: '#f59e0b', bg: '#fef3c7' };
-        if (value <= 55.4) return { level: 'Unhealthy for Sensitive', color: '#f97316', bg: '#fed7aa' };
-        if (value <= 150.4) return { level: 'Unhealthy', color: '#ef4444', bg: '#fecaca' };
-        return { level: 'Hazardous', color: '#991b1b', bg: '#fca5a5' };
-    };
-
-    // Convert PM2.5/PM10 µg/m³ to AQI (US EPA standard)
-    const calculateAQI = (concentration) => {
-        // PM2.5 breakpoints (µg/m³) to AQI
-        const breakpoints = [
-            { cLow: 0, cHigh: 12.0, aqiLow: 0, aqiHigh: 50 },
-            { cLow: 12.1, cHigh: 35.4, aqiLow: 51, aqiHigh: 100 },
-            { cLow: 35.5, cHigh: 55.4, aqiLow: 101, aqiHigh: 150 },
-            { cLow: 55.5, cHigh: 150.4, aqiLow: 151, aqiHigh: 200 },
-            { cLow: 150.5, cHigh: 250.4, aqiLow: 201, aqiHigh: 300 },
-            { cLow: 250.5, cHigh: 500.4, aqiLow: 301, aqiHigh: 500 }
+    const calculateAQI = (c) => {
+        const bp = [
+            { cL: 0, cH: 12.0, aL: 0, aH: 50 }, { cL: 12.1, cH: 35.4, aL: 51, aH: 100 },
+            { cL: 35.5, cH: 55.4, aL: 101, aH: 150 }, { cL: 55.5, cH: 150.4, aL: 151, aH: 200 },
+            { cL: 150.5, cH: 250.4, aL: 201, aH: 300 }, { cL: 250.5, cH: 500.4, aL: 301, aH: 500 }
         ];
-
-        for (let bp of breakpoints) {
-            if (concentration >= bp.cLow && concentration <= bp.cHigh) {
-                const aqi = ((bp.aqiHigh - bp.aqiLow) / (bp.cHigh - bp.cLow)) * 
-                           (concentration - bp.cLow) + bp.aqiLow;
-                return Math.round(aqi);
-            }
-        }
-        
-        // If concentration is above 500.4, return 500+
-        return concentration > 500.4 ? 500 : Math.round(concentration);
+        const b = bp.find(x => c >= x.cL && c <= x.cH);
+        if (!b) return c > 500.4 ? 500 : Math.round(c);
+        return Math.round(((b.aH - b.aL) / (b.cH - b.cL)) * (c - b.cL) + b.aL);
     };
 
-    const getAQIInfo = (aqi) => {
-        if (aqi <= 50) return { level: 'Good', color: '#10b981', bg: '#d1fae5' };
-        if (aqi <= 100) return { level: 'Moderate', color: '#f59e0b', bg: '#fef3c7' };
-        if (aqi <= 150) return { level: 'Unhealthy for Sensitive', color: '#f97316', bg: '#fed7aa' };
-        if (aqi <= 200) return { level: 'Unhealthy', color: '#ef4444', bg: '#fecaca' };
-        if (aqi <= 300) return { level: 'Very Unhealthy', color: '#991b1b', bg: '#fca5a5' };
-        return { level: 'Hazardous', color: '#7f1d1d', bg: '#fca5a5' };
+    const getAQIInfo = (a) => {
+        if (a <= 50) return { level: 'Good', color: '#10b981', bg: '#f0fdf4', border: '#dcfce7', status: 'Optimal' };
+        if (a <= 100) return { level: 'Moderate', color: '#f59e0b', bg: '#fffbeb', border: '#fef3c7', status: 'Fair' };
+        if (a <= 150) return { level: 'Unhealthy*', color: '#f97316', bg: '#fff7ed', border: '#ffedd5', status: 'Sensitivity Risk' };
+        return { level: 'High Risk', color: '#dc2626', bg: '#fef2f2', border: '#fee2e2', status: 'Exposure Alert' };
     };
 
-    if (loading) {
-        return (
-            <div className="card" style={{ padding: '1.5rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
-                    <Wind size={20} color="#3b82f6" />
-                    <h3 style={{ fontSize: '1rem', fontWeight: 600 }}>Real-Time Air Quality</h3>
-                </div>
-                <select 
-                    value={selectedLocation}
-                    onChange={handleLocationChange}
-                    style={{
-                        width: '100%',
-                        padding: '0.75rem 1rem',
-                        marginBottom: '1rem',
-                        borderRadius: '0.5rem',
-                        border: '2px solid #e2e8f0',
-                        fontSize: '0.875rem',
-                        fontWeight: 500,
-                        color: '#1e293b',
-                        backgroundColor: '#ffffff',
-                        cursor: 'pointer',
-                        outline: 'none',
-                        boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-                        appearance: 'none',
-                        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
-                        backgroundRepeat: 'no-repeat',
-                        backgroundPosition: 'right 1rem center',
-                        paddingRight: '2.5rem'
-                    }}
-                >
-                    {LOCATIONS.map(loc => (
-                        <option key={loc.id} value={loc.id}>{loc.name}</option>
-                    ))}
-                </select>
-                <p style={{ color: '#94a3b8', fontSize: '0.875rem' }}>Loading...</p>
-            </div>
-        );
-    }
+    if (loading && !airData) return (
+        <div className="card clinical-shadow" style={{ padding: '32px' }}>
+            <div style={{ height: '18px', width: '120px', backgroundColor: '#f1f5f9', borderRadius: '4px', marginBottom: '24px' }} />
+            <div style={{ height: '42px', width: '100%', backgroundColor: '#f8fafc', borderRadius: '8px', marginBottom: '16px' }} />
+            <div style={{ height: '100px', width: '100%', backgroundColor: '#f8fafc', borderRadius: '12px' }} />
+        </div>
+    );
 
-    if (error) {
-        return (
-            <div className="card" style={{ padding: '1.5rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
-                    <AlertTriangle size={20} color="#ef4444" />
-                    <h3 style={{ fontSize: '1rem', fontWeight: 600 }}>Air Quality Data</h3>
-                </div>
-                <select 
-                    value={selectedLocation}
-                    onChange={handleLocationChange}
-                    style={{
-                        width: '100%',
-                        padding: '0.75rem 1rem',
-                        marginBottom: '1rem',
-                        borderRadius: '0.5rem',
-                        border: '2px solid #e2e8f0',
-                        fontSize: '0.875rem',
-                        fontWeight: 500,
-                        color: '#1e293b',
-                        backgroundColor: '#ffffff',
-                        cursor: 'pointer',
-                        outline: 'none',
-                        boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-                        appearance: 'none',
-                        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
-                        backgroundRepeat: 'no-repeat',
-                        backgroundPosition: 'right 1rem center',
-                        paddingRight: '2.5rem'
-                    }}
-                >
-                    {LOCATIONS.map(loc => (
-                        <option key={loc.id} value={loc.id}>{loc.name}</option>
-                    ))}
-                </select>
-                <p style={{ color: '#ef4444', fontSize: '0.875rem' }}>{error}</p>
-            </div>
-        );
-    }
-
-    if (!airData) return null;
-
-    const aqi = calculateAQI(airData.value);
-    const aqiInfo = getAQIInfo(aqi);
+    const aqi = calculateAQI(airData?.value || 0);
+    const info = getAQIInfo(aqi);
 
     return (
-        <div className="card" style={{ padding: '1.5rem', border: `2px solid ${aqiInfo.color}20` }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <Wind size={20} color="#3b82f6" />
-                    <h3 style={{ fontSize: '1rem', fontWeight: 600 }}>Real-Time Air Quality</h3>
+        <motion.div
+            initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }}
+            className="card clinical-shadow"
+            style={{
+                padding: '0',
+                overflow: 'hidden', backgroundColor: '#ffffff', border: '1px solid #f1f5f9'
+            }}
+        >
+            <div style={{ padding: '14px 24px', backgroundColor: '#f8fafc', borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Wind size={16} color="#3b82f6" />
+                    <span style={{ fontSize: '0.7rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Environmental Sync</span>
                 </div>
-                <button 
-                    onClick={() => fetchAirQuality(selectedLocation)}
-                    style={{ 
-                        background: 'none', 
-                        border: 'none', 
-                        cursor: 'pointer',
-                        padding: '0.25rem',
-                        display: 'flex',
-                        alignItems: 'center'
-                    }}
-                    title="Refresh"
-                >
-                    <RefreshCw size={16} color="#64748b" />
+                <button onClick={() => fetchAirQuality(selectedLocation)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }} className="breadcrumb-button">
+                    <RefreshCw size={14} color="#94a3b8" />
                 </button>
             </div>
 
-            <select 
-                value={selectedLocation}
-                onChange={handleLocationChange}
-                style={{
-                    width: '100%',
-                    padding: '0.75rem 1rem',
-                    marginBottom: '1rem',
-                    borderRadius: '0.5rem',
-                    border: '2px solid #e2e8f0',
-                    fontSize: '0.875rem',
-                    fontWeight: 500,
-                    color: '#1e293b',
-                    backgroundColor: '#ffffff',
-                    cursor: 'pointer',
-                    outline: 'none',
-                    transition: 'all 0.2s ease',
-                    boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-                    appearance: 'none',
-                    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
-                    backgroundRepeat: 'no-repeat',
-                    backgroundPosition: 'right 1rem center',
-                    paddingRight: '2.5rem'
-                }}
-                onMouseOver={(e) => e.target.style.borderColor = '#3b82f6'}
-                onMouseOut={(e) => e.target.style.borderColor = '#e2e8f0'}
-                onFocus={(e) => {
-                    e.target.style.borderColor = '#3b82f6';
-                    e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)';
-                }}
-                onBlur={(e) => {
-                    e.target.style.borderColor = '#e2e8f0';
-                    e.target.style.boxShadow = '0 1px 2px 0 rgba(0, 0, 0, 0.05)';
-                }}
-            >
-                {LOCATIONS.map(loc => (
-                    <option key={loc.id} value={loc.id}>{loc.name}</option>
-                ))}
-            </select>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
-                <MapPin size={14} color="#64748b" />
-                <span style={{ fontSize: '0.875rem', color: '#64748b' }}>
-                    {airData.city}, {airData.country}
-                </span>
-            </div>
-
-            <div style={{ 
-                backgroundColor: aqiInfo.bg, 
-                padding: '1rem', 
-                borderRadius: '0.5rem',
-                marginBottom: '0.75rem'
-            }}>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem' }}>
-                    <span style={{ fontSize: '2rem', fontWeight: 700, color: aqiInfo.color }}>
-                        {aqi}
-                    </span>
-                    <span style={{ fontSize: '0.875rem', color: '#64748b' }}>AQI</span>
+            <div style={{ padding: '28px 32px 32px' }}>
+                <div style={{ marginBottom: '20px', position: 'relative' }}>
+                    <select
+                        value={selectedLocation} onChange={(e) => setSelectedLocation(Number(e.target.value))}
+                        style={{ width: '100%', padding: '12px 16px', borderRadius: '10px', border: '1.5px solid #e2e8f0', fontSize: '0.875rem', fontWeight: 600, color: '#1e293b', backgroundColor: '#ffffff', cursor: 'pointer', outline: 'none', appearance: 'none', boxSizing: 'border-box' }}
+                    >
+                        {LOCATIONS.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
+                    </select>
+                    <div style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}>
+                        <ChevronRight size={14} color="#94a3b8" style={{ transform: 'rotate(90deg)' }} />
+                    </div>
                 </div>
-                <div style={{ 
-                    fontSize: '0.875rem', 
-                    fontWeight: 600, 
-                    color: aqiInfo.color,
-                    marginTop: '0.25rem'
-                }}>
-                    {aqiInfo.level}
-                </div>
-            </div>
 
-            <p style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
-                Raw: {airData.value} {airData.unit} • Updated: {new Date(airData.lastUpdated).toLocaleString()}
-            </p>
-        </div>
+                {error ? (
+                    <div style={{ color: '#ef4444', backgroundColor: '#fef2f2', padding: '16px', borderRadius: '10px', display: 'flex', gap: '8px', alignItems: 'center', fontSize: '0.8125rem' }}>
+                        <AlertTriangle size={16} /> {error}
+                    </div>
+                ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <div style={{ backgroundColor: '#f1f5f9', padding: '6px', borderRadius: '8px', color: '#64748b' }}><MapPin size={16} /></div>
+                            <div>
+                                <div style={{ fontSize: '1rem', fontWeight: 700, color: '#0f172a' }}>{airData.location}</div>
+                                <div style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 500 }}>{airData.city}, India</div>
+                            </div>
+                        </div>
+
+                        <div style={{ backgroundColor: info.bg, padding: '16px 24px', borderRadius: '14px', border: `1px solid ${info.border}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
+                                <span style={{ fontSize: '2.5rem', fontWeight: 800, color: info.color, lineHeight: '1' }}>{aqi}</span>
+                                <span style={{ fontSize: '0.625rem', fontWeight: 800, color: info.color, letterSpacing: '0.05em' }}>AQI</span>
+                            </div>
+                            <div style={{ textAlign: 'right' }}>
+                                <div style={{ fontSize: '0.8125rem', fontWeight: 800, color: info.color, textTransform: 'uppercase', marginBottom: '2px' }}>{info.level}</div>
+                                <div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 600 }}>{info.status}</div>
+                            </div>
+                        </div>
+
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '16px', borderTop: '1px solid #f1f5f9' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#94a3b8', fontSize: '0.65rem', fontWeight: 500 }}>
+                                <Clock size={12} /> Sync: {new Date(airData.lastUpdated).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#10b981', fontSize: '0.65rem', fontWeight: 700 }}>
+                                <ShieldCheck size={12} /> EP-API SECURE
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
+        </motion.div>
     );
 };
 

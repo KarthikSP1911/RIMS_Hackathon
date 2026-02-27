@@ -1,5 +1,5 @@
 """
-RespiraScan Pipeline Verification Script
+UrbanVoice Sentinel Pipeline Verification Script
 Tests complete ML pipeline with demo samples
 """
 
@@ -10,15 +10,15 @@ import numpy as np
 import soundfile as sf
 from pathlib import Path
 import json
-from ml.inference_pipeline import RespiraNetInference
-from ml.dataset_generator import RespiratoryDatasetGenerator
+from ml.inference_pipeline import UrbanVoiceInference
+from ml.dataset_generator import UrbanAcousticDatasetGenerator
 
 
 def generate_demo_audio_samples():
     """Generate 10 demo audio samples for testing"""
     print("Generating 10 demo audio samples...")
     
-    generator = RespiratoryDatasetGenerator()
+    generator = UrbanAcousticDatasetGenerator()
     demo_samples = []
     
     # Generate 5 normal and 5 stressed samples
@@ -66,8 +66,8 @@ def test_inference_pipeline(demo_samples):
     print("="*60)
     
     # Initialize inference
-    inference = RespiraNetInference(
-        model_path='respira_net_v1.pt',
+    inference = UrbanVoiceInference(
+        model_path='sentinel_net_v1.pt',
         scaler_path='scaler.pkl'
     )
     
@@ -130,7 +130,7 @@ def verify_model_requirements():
     checks = []
     
     # Check model file exists
-    model_path = Path('respira_net_v1.pt')
+    model_path = Path('sentinel_net_v1.pt')
     if model_path.exists():
         model_size_mb = model_path.stat().st_size / (1024**2)
         print(f"[OK] Model file exists: {model_size_mb:.2f}MB")
@@ -140,7 +140,7 @@ def verify_model_requirements():
         checks.append(('Model exists', False, 'Not found'))
     
     # Check TorchScript model
-    ts_path = Path('respira_net_ts.pt')
+    ts_path = Path('sentinel_net_ts.pt')
     if ts_path.exists():
         ts_size_mb = ts_path.stat().st_size / (1024**2)
         print(f"[OK] TorchScript model exists: {ts_size_mb:.2f}MB")
@@ -200,7 +200,7 @@ def verify_model_requirements():
 def main():
     """Main verification script"""
     print("="*60)
-    print("RespiraScan ML Pipeline Verification")
+    print("UrbanVoice Sentinel ML Pipeline Verification")
     print("="*60)
     
     # Step 1: Generate demo samples

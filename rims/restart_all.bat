@@ -1,6 +1,6 @@
 @echo off
 echo ====================================================
-echo   RespiraScan - Quick Restart Script
+echo   UrbanVoice Sentinel - Quick Restart Script
 echo ====================================================
 echo.
 echo Stopping any existing processes...

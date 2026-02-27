@@ -4,7 +4,7 @@ import { MessageCircle, X, Send, Loader } from 'lucide-react';
 const Chatbot = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState([
-        { role: 'assistant', content: 'Hi! I\'m your RespiraScan AI assistant. Ask me anything about respiratory health, air quality, or how to use our platform!' }
+        { role: 'assistant', content: 'Hi! I\'m your UrbanVoice Sentinel AI. Ask me anything about urban acoustic health, environmental signatures, or how to use our monitoring platform!' }
     ]);
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
@@ -42,9 +42,9 @@ const Chatbot = () => {
             const data = await response.json();
             setMessages(prev => [...prev, { role: 'assistant', content: data.response }]);
         } catch (err) {
-            setMessages(prev => [...prev, { 
-                role: 'assistant', 
-                content: 'Sorry, I encountered an error. Please try again.' 
+            setMessages(prev => [...prev, {
+                role: 'assistant',
+                content: 'Sorry, I encountered an error. Please try again.'
             }]);
         } finally {
             setLoading(false);
@@ -123,7 +123,7 @@ const Chatbot = () => {
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                             <MessageCircle size={24} />
                             <div>
-                                <h3 style={{ fontSize: '1rem', fontWeight: 600, margin: 0 }}>RespiraScan AI</h3>
+                                <h3 style={{ fontSize: '1rem', fontWeight: 600, margin: 0 }}>Sentinel Core</h3>
                                 <p style={{ fontSize: '0.75rem', margin: 0, opacity: 0.9 }}>Ask me anything</p>
                             </div>
                         </div>

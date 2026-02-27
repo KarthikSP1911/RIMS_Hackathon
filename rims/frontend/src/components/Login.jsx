@@ -34,8 +34,8 @@ const Login = () => {
                 throw new Error(data.message || 'Login failed');
             }
 
-            localStorage.setItem('respirascan_token', data.token);
-            localStorage.setItem('respirascan_user', JSON.stringify(data.user));
+            localStorage.setItem('urbanvoice_token', data.token);
+            localStorage.setItem('urbanvoice_user', JSON.stringify(data.user));
 
             navigate('/dashboard');
         } catch (err) {
@@ -55,7 +55,7 @@ const Login = () => {
             >
                 <div style={{ textAlign: 'center' }}>
                     <h2>Login</h2>
-                    <p className="subtitle">Welcome back to RespiraScan</p>
+                    <p className="subtitle">Sentinel Authentication: Access UrbanVoice</p>
                 </div>
 
                 {error && (

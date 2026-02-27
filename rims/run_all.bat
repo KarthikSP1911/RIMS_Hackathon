@@ -7,7 +7,7 @@ echo ====================================================
 
 :: 1. Start FastAPI Core (Python)
 echo [1/3] Starting FastAPI on Port 8000...
-start "Sentinel-Core (FastAPI)" cmd /c "cd /d %~dp0backend-fastapi && .\venv\Scripts\python -m app.main"
+start "Sentinel-Core (FastAPI)" cmd /c "cd /d %~dp0backend-fastapi && set PYTHONUTF8=1 && .\venv\Scripts\python -m app.main"
 
 :: 2. Start Express Middleware (Node)
 echo [2/3] Starting Express on Port 5000...

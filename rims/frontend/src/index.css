@@ -901,6 +901,49 @@ h3 {
   animation: pulseHeart 1.5s infinite ease-in-out;
 }
 
+/* Clinical UI Utilities */
+.spin-animation {
+  animation: spin 1s linear infinite;
+}
+
+.pulse-loader {
+  animation: clinicalPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes clinicalPulse {
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.7;
+    transform: scale(0.95);
+  }
+}
+
+.glass-morphism {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.clinical-shadow {
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.04), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+}
+
+.breadcrumb-button {
+  transition: all 0.2s ease;
+}
+
+.breadcrumb-button:hover {
+  color: #3b82f6 !important;
+  background-color: #f1f5f9 !important;
+}
+
 /* Skeleton Shimmer */
 @keyframes shimmer {
   0% {

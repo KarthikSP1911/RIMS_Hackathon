@@ -34,11 +34,11 @@ def get_inference_engine():
     global inference_engine
     if inference_engine is None:
         try:
-            from inference_pipeline import RespiraNetInference
+            from inference_pipeline import UrbanVoiceInference
             # Models paths are handled internally by the class now, but we can pass them
             model_path = 'models/respira_net_v1.pt'
             scaler_path = 'models/scaler.pkl'
-            inference_engine = RespiraNetInference(model_path=model_path, scaler_path=scaler_path)
+            inference_engine = UrbanVoiceInference(model_path=model_path, scaler_path=scaler_path)
             print("[OK] ML Inference Engine initialized")
         except Exception as e:
             print(f"[ERROR] Critical failure initializing ML engine: {e}")
@@ -56,7 +56,7 @@ except:
 
 @router.post("/analyze")
 async def analyze_audio(file: UploadFile = File(...)):
-    """Analyze respiratory audio file for risk assessment"""
+    """Analyze urban acoustic audio file for health sentinel mapping"""
     
     # Validate file type
     if not file.filename.endswith(('.wav', '.mp3', '.m4a', '.ogg')):
@@ -132,7 +132,7 @@ async def get_data():
         },
         "items": ["Decentralized-Node", "FastAPI-Engine", "Neural-Processing", "Secure-Mux"],
         "status": "system_nominal",
-        "layer": "Neural Infrastructure Layer"
+        "layer": "Sentinel Neural Infrastructure Layer"
     }
 
 @router.get("/air-quality")
@@ -182,7 +182,7 @@ async def generate_personalized_report(request: ReportRequest):
     gemini_api_key = "AIzaSyDpuiBztF-uYwHS5wJCdoXyNI8AS8nrkkM"
     
     # Construct prompt for Gemini
-    prompt = f"""You are a health advisor AI. Generate a personalized, compassionate health report based on the following data:
+    prompt = f"""You are the UrbanVoice Sentinel health advisor. Generate a personalized, authoritative health synthesis based on the following acoustic and environmental data:
 
 RESPIRATORY ANALYSIS:
 - Risk Level: {request.analysis.risk_level}
@@ -194,8 +194,8 @@ AIR QUALITY DATA:
 - Air Quality: {request.air_quality.value} {request.air_quality.unit}
 
 Please provide:
-1. A brief summary combining both respiratory health and environmental factors
-2. How the air quality might impact respiratory health
+1. A brief summary combining both acoustic health signatures and urban environmental factors
+2. How the local air quality and urban acoustics might impact respiratory well-being
 3. Personalized recommendations considering both factors
 4. Preventive measures specific to this location
 
@@ -242,13 +242,13 @@ async def chat_with_ai(request: ChatRequest):
     gemini_api_key = "AIzaSyDpuiBztF-uYwHS5wJCdoXyNI8AS8nrkkM"
     
     # System context for the chatbot
-    system_context = """You are a helpful AI assistant for RespiraScan, a respiratory health screening platform. 
+    system_context = """You are a helpful AI assistant for UrbanVoice Sentinel, an urban acoustic health monitoring platform. 
 You help users understand:
-- Respiratory health and common conditions (asthma, COPD, pneumonia, COVID-19)
-- How our AI-powered voice analysis works
-- Air quality and its impact on respiratory health
-- When to seek medical attention
-- How to use the RespiraScan platform
+- Acoustic health signatures and common respiratory conditions
+- How our sentinel AI-powered acoustic analysis works
+- Urban air quality and its impact on community health
+- When to seek medical attention or individual assessment
+- How to use the UrbanVoice Sentinel platform
 
 Keep responses concise (2-3 sentences), friendly, and informative. Always remind users that this is for screening purposes only and not a replacement for professional medical advice."""
 

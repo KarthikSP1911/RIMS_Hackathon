@@ -1,5 +1,5 @@
 """
-Production Inference Pipeline for RespiraScan
+Production Inference Pipeline for UrbanVoice Sentinel
 Target: <2 seconds total processing time
 """
 
@@ -11,7 +11,7 @@ import time
 import json
 from pathlib import Path
 
-from model_architecture import create_respira_net
+from model_architecture import create_sentinel_net
 
 
 class AudioProcessor:
@@ -98,7 +98,7 @@ class AudioProcessor:
         return mfcc
     
     def calculate_acoustic_features(self, audio):
-        """Calculate acoustic features using PROVEN medical indicators"""
+        """Calculate acoustic features using PROVEN health signatures and environmental indicators"""
         
         # 1. Spectral Centroid - frequency distribution (Hz)
         spectral_centroids = librosa.feature.spectral_centroid(y=audio, sr=self.sr)[0]
@@ -203,10 +203,10 @@ class AudioProcessor:
         }
 
 
-class RespiraNetInference:
+class UrbanVoiceInference:
     """Production inference pipeline"""
     
-    def __init__(self, model_path='models/respira_net_v1.pt', scaler_path='models/scaler.pkl'):
+    def __init__(self, model_path='models/sentinel_net_v1.pt', scaler_path='models/scaler.pkl'):
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.audio_processor = AudioProcessor()
         self.model = None
@@ -217,9 +217,9 @@ class RespiraNetInference:
         possible_model_paths = [
             Path(model_path),
             base_dir / model_path,
-            base_dir / 'models/respira_net_v1.pt',
-            base_dir / 'models/respira_net_ts.pt',
-            base_dir / 'models/respira_net_fold1.pt'
+            base_dir / 'models/sentinel_net_v1.pt',
+            base_dir / 'models/sentinel_net_ts.pt',
+            base_dir / 'models/sentinel_net_fold1.pt'
         ]
         
         actual_model_path = None
@@ -232,7 +232,7 @@ class RespiraNetInference:
         if actual_model_path:
             try:
                 print(f"Loading model from {actual_model_path}...")
-                self.model = create_respira_net()
+                self.model = create_sentinel_net()
                 self.model.load_state_dict(torch.load(actual_model_path, map_location=self.device))
                 self.model.to(self.device)
                 self.model.eval()
@@ -325,7 +325,7 @@ class RespiraNetInference:
             print("  -> Moderate shimmer detected (+0.3)")
         elif shimmer > 0.042:  # Slightly elevated
             acoustic_risk += 0.15
-            print("  -> Slight shimmer detected (+0.15)")
+            print("  -> Slight jitter detected (+0.15)")
         else:
             print("  -> Normal shimmer (no boost)")
         
@@ -351,15 +351,15 @@ class RespiraNetInference:
         # Classify based on final probability
         if final_probability >= 0.70:
             risk_level = "HIGH RISK"
-            recommendation = "N95 mask recommended. Consult healthcare provider immediately."
+            recommendation = "High risk acoustic anomaly detected. Individual clinical assessment and environmental mitigation advised."
             color = "red"
         elif final_probability >= 0.35:
             risk_level = "MODERATE RISK"
-            recommendation = "Mask advised. Monitor symptoms closely."
+            recommendation = "Moderate acoustic indicators detected. Monitor health trends and urban exposure closely."
             color = "orange"
         else:
             risk_level = "LOW RISK"
-            recommendation = "Normal breathing patterns detected. Continue monitoring."
+            recommendation = "Stable acoustic profile detected. Sentinel monitoring continues."
             color = "green"
         
         return {
@@ -453,12 +453,12 @@ class RespiraNetInference:
             }
 
 
-def convert_to_torchscript(model_path='models/respira_net_v1.pt', output_path='models/respira_net_ts.pt'):
+def convert_to_torchscript(model_path='models/sentinel_net_v1.pt', output_path='models/sentinel_net_ts.pt'):
     """Convert model to TorchScript for production deployment"""
     print("Converting model to TorchScript...")
     
     # Load model
-    model = create_respira_net()
+    model = create_sentinel_net()
     model.load_state_dict(torch.load(model_path, map_location='cpu'))
     model.eval()
     
@@ -485,12 +485,12 @@ if __name__ == "__main__":
     print("Testing inference pipeline...")
     
     # Convert to TorchScript
-    if Path('models/respira_net_v1.pt').exists():
+    if Path('models/sentinel_net_v1.pt').exists():
         convert_to_torchscript()
     
     # Test inference
-    if Path('models/respira_net_v1.pt').exists() and Path('models/scaler.pkl').exists():
-        inference = RespiraNetInference()
+    if Path('models/sentinel_net_v1.pt').exists() and Path('models/scaler.pkl').exists():
+        inference = UrbanVoiceInference()
         
         # Create a test audio file if needed
         print("\nReady for inference!")

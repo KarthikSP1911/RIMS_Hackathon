@@ -1,4 +1,4 @@
-# RespiraScan ML Pipeline - Implementation Summary
+# UrbanVoice Sentinel ML Pipeline - Implementation Summary
 
 ## ✅ COMPLETE PRODUCTION ML PIPELINE DELIVERED
 
@@ -14,7 +14,7 @@
 - Floor echo simulation (1st-20th floor)
 - Outputs: `X_mfcc.npy` (13x100 features), `y_risk.npy` (binary labels)
 
-#### 2. Model Architecture (RespiraNet) ✅
+#### 2. Model Architecture (SentinelNet) ✅
 **File**: `ml/model_architecture.py`
 
 **Hybrid CNN-LSTM Architecture:**
@@ -34,7 +34,7 @@
 - Binary cross-entropy loss
 - Early stopping (patience=10)
 - Batch normalization for faster convergence
-- Saves best model: `respira_net_v1.pt`
+- Saves best model: `sentinel_net_v1.pt`
 - Generates `train_history.json` with CV scores
 
 #### 4. Production Inference Pipeline ✅
@@ -57,12 +57,12 @@
 probability → risk_level:
 - ≥0.85 = "HIGH RISK" (N95 recommended)
 - 0.60-0.84 = "MODERATE RISK" (Mask advised)
-- <0.60 = "LOW RISK" (Normal breathing)
+- <0.60 = "LOW RISK" (Stable acoustics)
 ```
 
 #### 6. Optimization Requirements ✅
 
-- ✅ TorchScript conversion: `respira_net_ts.pt`
+- ✅ TorchScript conversion: `sentinel_net_ts.pt`
 - ✅ Inference target: <2 seconds total pipeline
 - ✅ Model size: <10MB
 - ✅ CPU-only compatible
@@ -101,7 +101,7 @@ probability → risk_level:
 backend-fastapi/
 ├── ml/
 │   ├── dataset_generator.py      ✅ 10K sample generation
-│   ├── model_architecture.py     ✅ RespiraNet CNN-LSTM
+│   ├── model_architecture.py     ✅ SentinelNet CNN-LSTM
 │   ├── train_model.py            ✅ 5-fold CV training
 │   ├── inference_pipeline.py     ✅ 7-step production pipeline
 │   ├── run_complete_pipeline.py  ✅ Master execution script
@@ -111,8 +111,8 @@ backend-fastapi/
 └── models/
     ├── X_mfcc.npy               ✅ Training features
     ├── y_risk.npy               ✅ Training labels
-    ├── respira_net_v1.pt        ✅ Trained model
-    ├── respira_net_ts.pt        ✅ TorchScript production
+    ├── sentinel_net_v1.pt        ✅ Trained model
+    ├── sentinel_net_ts.pt        ✅ TorchScript production
     ├── scaler.pkl               ✅ Feature normalization
     ├── train_history.json       ✅ CV scores + plots
     ├── demo_results.json        ✅ 10 sample predictions
@@ -131,7 +131,7 @@ python run_complete_pipeline.py
 
 This runs all 5 steps:
 1. Generate 10K dataset
-2. Train RespiraNet with 5-fold CV
+2. Train SentinelNet with 5-fold CV
 3. Convert to TorchScript
 4. Generate 10 demo samples
 5. Test inference pipeline
@@ -154,9 +154,9 @@ python pipeline_test.py
 
 #### Option 3: Use Inference Only
 ```python
-from ml.inference_pipeline import RespiraNetInference
+from ml.inference_pipeline import UrbanVoiceInference
 
-inference = RespiraNetInference()
+inference = UrbanVoiceInference()
 result = inference.process_audio('audio.wav')
 print(result)
 ```
@@ -178,11 +178,11 @@ To integrate with your existing FastAPI backend:
 ```python
 # In app/main.py or app/api/analyze.py
 
-from ml.inference_pipeline import RespiraNetInference
+from ml.inference_pipeline import UrbanVoiceInference
 
 # Initialize once at startup
-inference_engine = RespiraNetInference(
-    model_path='models/respira_net_v1.pt',
+inference_engine = UrbanVoiceInference(
+    model_path='models/sentinel_net_v1.pt',
     scaler_path='models/scaler.pkl'
 )
 
@@ -258,7 +258,7 @@ This will:
 
 All 7 requirements met:
 1. ✅ Dataset Generation (10K samples)
-2. ✅ Model Architecture (RespiraNet)
+2. ✅ Model Architecture (SentinelNet)
 3. ✅ Training Pipeline (5-fold CV)
 4. ✅ Production Inference (7-step process)
 5. ✅ Risk Classification Logic

@@ -1,6 +1,6 @@
 """
-RespiraScan Dataset Generator
-Generates 10K synthetic respiratory audio samples with realistic acoustic features
+UrbanVoice Sentinel Dataset Generator
+Generates 10K synthetic urban acoustic audio samples with realistic health signatures and environmental features
 """
 
 import numpy as np
@@ -8,20 +8,20 @@ import librosa
 from scipy import signal
 import json
 
-class RespiratoryDatasetGenerator:
+class UrbanAcousticDatasetGenerator:
     def __init__(self, n_samples=10000, sample_rate=16000):
         self.n_samples = n_samples
         self.sr = sample_rate
         self.duration = 3.0  # 3 seconds per sample
         
     def generate_breathing_audio(self, jitter, shimmer, aqi, floor):
-        """Generate synthetic breathing audio with specified parameters"""
+        """Generate synthetic acoustic audio with specified health and urban parameters"""
         t = np.linspace(0, self.duration, int(self.sr * self.duration))
         
-        # Base breathing frequency (12-20 breaths per minute)
+        # Base acoustic periodic signature (respiratory frequency 12-20 cycles per minute)
         breath_freq = np.random.uniform(0.2, 0.33)  # Hz
         
-        # Generate base breathing pattern
+        # Generate base acoustic pattern
         breathing = np.sin(2 * np.pi * breath_freq * t)
         
         # Add jitter (frequency variation)
@@ -79,7 +79,7 @@ class RespiratoryDatasetGenerator:
     
     def generate_dataset(self):
         """Generate complete dataset with balanced classes"""
-        print("Generating 10K respiratory audio samples...")
+        print("Generating 10K urban acoustic mapping samples...")
         
         X_mfcc = []
         y_risk = []
@@ -107,7 +107,7 @@ class RespiratoryDatasetGenerator:
             })
             
             if (i + 1) % 1000 == 0:
-                print(f"  Generated {i + 1}/5000 normal samples")
+                print(f"  Generated {i + 1}/5000 normal acoustic baseline samples")
         
         # Generate 5000 stressed/high-risk samples (risk=1)
         for i in range(5000):
@@ -131,7 +131,7 @@ class RespiratoryDatasetGenerator:
             })
             
             if (i + 1) % 1000 == 0:
-                print(f"  Generated {i + 1}/5000 stressed samples")
+                print(f"  Generated {i + 1}/5000 anomalous acoustic samples")
         
         # Convert to numpy arrays
         X_mfcc = np.array(X_mfcc, dtype=np.float32)
@@ -170,6 +170,6 @@ class RespiratoryDatasetGenerator:
 
 
 if __name__ == "__main__":
-    generator = RespiratoryDatasetGenerator(n_samples=10000)
+    generator = UrbanAcousticDatasetGenerator(n_samples=10000)
     X_mfcc, y_risk, metadata = generator.generate_dataset()
     generator.save_dataset(X_mfcc, y_risk, metadata)

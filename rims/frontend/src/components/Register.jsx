@@ -59,8 +59,8 @@ const Register = () => {
                 style={{ maxWidth: '500px' }}
             >
                 <div style={{ textAlign: 'center' }}>
-                    <h2>Join RespiraScan</h2>
-                    <p className="subtitle">Create your clinical screening account</p>
+                    <h2>Initialize UrbanVoice Sentinel</h2>
+                    <p className="subtitle">Register your sentinel monitoring profile</p>
                 </div>
 
                 {error && (

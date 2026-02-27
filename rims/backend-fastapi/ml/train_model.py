@@ -1,5 +1,5 @@
 """
-RespiraNet Training Pipeline with 5-Fold Cross Validation
+SentinelNet Training Pipeline with 5-Fold Cross Validation
 Target: AUC 0.93+, Sensitivity 0.91+
 """
 
@@ -16,11 +16,11 @@ import pickle
 from datetime import datetime
 import time
 
-from model_architecture import create_respira_net
+from model_architecture import create_sentinel_net
 
 
-class RespiratoryDataset(Dataset):
-    """PyTorch Dataset for respiratory audio features"""
+class UrbanAcousticDataset(Dataset):
+    """PyTorch Dataset for urban acoustic health features"""
     
     def __init__(self, X, y):
         self.X = torch.FloatTensor(X)
@@ -33,7 +33,7 @@ class RespiratoryDataset(Dataset):
         return self.X[idx], self.y[idx]
 
 
-class RespiraNetTrainer:
+class SentinelNetTrainer:
     """Training pipeline with cross-validation"""
     
     def __init__(self, n_folds=5, batch_size=32, epochs=50, learning_rate=0.001):
@@ -204,14 +204,14 @@ class RespiraNetTrainer:
             X_train, X_val = X_normalized[train_idx], X_normalized[val_idx]
             y_train, y_val = y[train_idx], y[val_idx]
             
-            train_dataset = RespiratoryDataset(X_train, y_train)
-            val_dataset = RespiratoryDataset(X_val, y_val)
+            train_dataset = UrbanAcousticDataset(X_train, y_train)
+            val_dataset = UrbanAcousticDataset(X_val, y_val)
             
             train_loader = DataLoader(train_dataset, batch_size=self.batch_size, shuffle=True)
             val_loader = DataLoader(val_dataset, batch_size=self.batch_size, shuffle=False)
             
             # Create and train model
-            model = create_respira_net().to(self.device)
+            model = create_sentinel_net().to(self.device)
             model, fold_history, best_auc = self.train_fold(model, train_loader, val_loader, fold)
             
             fold_results.append({
@@ -223,7 +223,7 @@ class RespiraNetTrainer:
             all_histories.append(fold_history)
             
             # Save fold model
-            torch.save(model.state_dict(), f'models/respira_net_fold{fold+1}.pt')
+            torch.save(model.state_dict(), f'models/sentinel_net_fold{fold+1}.pt')
         
         # Calculate average metrics
         avg_auc = np.mean([r['best_auc'] for r in fold_results])
@@ -258,10 +258,10 @@ class RespiraNetTrainer:
         
         # Train final model on full dataset
         print(f"\nTraining final model on full dataset...")
-        full_dataset = RespiratoryDataset(X_normalized, y)
+        full_dataset = UrbanAcousticDataset(X_normalized, y)
         full_loader = DataLoader(full_dataset, batch_size=self.batch_size, shuffle=True)
         
-        final_model = create_respira_net().to(self.device)
+        final_model = create_sentinel_net().to(self.device)
         criterion = nn.BCELoss()
         optimizer = optim.Adam(final_model.parameters(), lr=self.learning_rate)
         
@@ -278,8 +278,8 @@ class RespiraNetTrainer:
                 optimizer.step()
         
         # Save final model
-        torch.save(final_model.state_dict(), 'models/respira_net_v1.pt')
-        print("Final model saved to models/respira_net_v1.pt")
+        torch.save(final_model.state_dict(), 'models/sentinel_net_v1.pt')
+        print("Final model saved to models/sentinel_net_v1.pt")
         
         return final_model, training_results
 
@@ -293,7 +293,7 @@ if __name__ == "__main__":
     print(f"Dataset loaded: X shape {X.shape}, y shape {y.shape}")
     
     # Train model
-    trainer = RespiraNetTrainer(
+    trainer = SentinelNetTrainer(
         n_folds=5,
         batch_size=32,
         epochs=50,

@@ -70,7 +70,7 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const token = localStorage.getItem('respirascan_token');
+  const token = localStorage.getItem('urbanvoice_token');
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -79,8 +79,8 @@ const Navbar = () => {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('respirascan_token');
-    localStorage.removeItem('respirascan_user');
+    localStorage.removeItem('urbanvoice_token');
+    localStorage.removeItem('urbanvoice_user');
     navigate('/');
   };
 
@@ -91,7 +91,7 @@ const Navbar = () => {
       <div className="container navbar-content">
         <Link to="/" className="logo">
           <HeartPulse size={28} color="var(--color-primary)" />
-          <span>Respira<span style={{ color: 'var(--color-primary)' }}>Scan</span></span>
+          <span>UrbanVoice<span style={{ color: 'var(--color-primary)' }}> Sentinel</span></span>
         </Link>
 
         <div className="nav-links">
@@ -128,7 +128,7 @@ const Hero = () => {
   const navigate = useNavigate();
   return (
     <section className="hero">
-      <div className="hero-bg" style={{ backgroundImage: 'url("/respirascan_hero_bg.png")', backgroundSize: 'cover', backgroundPosition: 'center' }} />
+      <div className="hero-bg" style={{ backgroundImage: 'url("/urbanvoice_hero_bg.png")', backgroundSize: 'cover', backgroundPosition: 'center' }} />
       <div className="container">
         <motion.div
           className="hero-content"
@@ -153,11 +153,11 @@ const Hero = () => {
               marginBottom: '1rem'
             }}
           >
-            AI-Powered Respiratory Screening
+            Advanced Urban Acoustic Monitoring
           </motion.span>
-          <h1 className="text-balance">AI-Based Respiratory Risk Detection from Voice</h1>
+          <h1 className="text-balance">UrbanVoice Acoustic Sentinel: Health Intelligence from Sound</h1>
           <p className="hero-subheading text-balance">
-            Upload a voice or breathing sample and receive an AI-powered respiratory risk assessment within seconds.
+            Monitor urban health risks through acoustic signatures. Receive real-time AI assessments of environmental well-being.
           </p>
           <div className="hero-ctas">
             <button className="btn btn-primary" onClick={() => navigate('/dashboard')}>
@@ -174,7 +174,7 @@ const Hero = () => {
 const HowItWorks = () => (
   <section id="how-it-works" className="section-padding section-alt">
     <div className="container">
-      <SectionHeader title="How It Works" subtitle="Three simple steps to understand your respiratory health markers." />
+      <SectionHeader title="Sentinel Workflow" subtitle="Three simple steps to monitor urban acoustic health markers." />
       <motion.div className="card-grid" variants={staggerContainer} initial="initial" whileInView="whileInView" viewport={{ once: true }}>
         <BenefitCard
           icon={UploadCloud}
@@ -184,7 +184,7 @@ const HowItWorks = () => (
         <BenefitCard
           icon={Brain}
           title="2. AI Extracts Acoustic Biomarkers"
-          description="Our neural network analyzes your audio for subtle acoustic markers associated with respiratory health."
+          description="Our semantic engine identifies subtle acoustic signatures in urban environments."
         />
         <BenefitCard
           icon={FileSearch}
@@ -209,7 +209,7 @@ const ConditionsDetected = () => (
       <div className="header-dark">
         <SectionHeader
           title="Conditions Detected"
-          subtitle="Our AI is trained to identify acoustic signatures of various respiratory conditions."
+          subtitle="Our sentinel is trained to identify acoustic signatures of various respiratory and urban health conditions."
         />
       </div>
       <motion.div className="conditions-grid" variants={staggerContainer} initial="initial" whileInView="whileInView" viewport={{ once: true }}>
@@ -237,7 +237,7 @@ const ConditionsDetected = () => (
 const WhyChoose = () => (
   <section id="benefits" className="section-padding section-alt">
     <div className="container">
-      <SectionHeader title="Why Choose RespiraScan" />
+      <SectionHeader title="Why UrbanVoice Sentinel" />
       <motion.div className="card-grid" variants={staggerContainer} initial="initial" whileInView="whileInView" viewport={{ once: true }}>
         <BenefitCard
           icon={Touchpad}
@@ -307,10 +307,10 @@ const Footer = () => (
         <div style={{ gridColumn: 'span 2' }}>
           <div className="footer-logo">
             <HeartPulse size={24} />
-            <span>RespiraScan</span>
+            <span>UrbanVoice Sentinel</span>
           </div>
           <p style={{ maxWidth: '300px', fontSize: '0.875rem' }}>
-            Advancing respiratory health screening through the power of acoustic artificial intelligence.
+            Powering urban acoustic health intelligence through advanced sentinel technology.
           </p>
         </div>
         <div className="footer-links">
@@ -330,9 +330,9 @@ const Footer = () => (
 
       <div className="footer-bottom">
         <div className="footer-disclaimer-full">
-          <strong>MEDICAL DISCLAIMER:</strong> RespiraScan is a screening tool and should not be used as a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition.
+          <strong>SENTINEL DISCLAIMER:</strong> UrbanVoice Sentinel is an acoustic monitoring platform and should not be used as a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition.
         </div>
-        <p style={{ fontSize: '0.75rem' }}>© 2026 RespiraScan Technologies Inc. All rights reserved.</p>
+        <p style={{ fontSize: '0.75rem' }}>© 2026 UrbanVoice Sentinel Technologies. All rights reserved.</p>
       </div>
     </div>
   </footer>
@@ -374,7 +374,7 @@ function App() {
           {/* TESTING MODE: Auth temporarily disabled */}
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/history" element={<HistoryPagePlaceholder />} />
-          
+
           {/* PRODUCTION: Uncomment to re-enable auth
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<Dashboard />} />

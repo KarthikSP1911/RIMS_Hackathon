@@ -6,7 +6,7 @@ import { Navigate, Outlet } from 'react-router-dom';
  * Redirects to /login if no valid token is found in localStorage.
  */
 const ProtectedRoute = () => {
-    const token = localStorage.getItem('respirascan_token');
+    const token = localStorage.getItem('urbanvoice_token');
 
     // TEMPORARILY DISABLED FOR TESTING - MongoDB not connected
     // if (!token) {

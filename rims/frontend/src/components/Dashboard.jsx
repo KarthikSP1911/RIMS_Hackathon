@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import {
     ArrowLeft,
     AlertCircle,
-    RefreshCw
+    RefreshCw,
+    ChevronRight
 } from 'lucide-react';
 import UploadCard from './UploadCard';
 import ResultCard from './ResultCard';
@@ -47,7 +48,7 @@ const Dashboard = ({ onBack }) => {
                 console.error('Analysis error from backend:', data);
                 throw new Error(data.error || 'Analysis failed on the server');
             }
-            
+
             if (!data.risk_level) {
                 console.error('Invalid response data:', data);
                 throw new Error('Invalid response from server');
@@ -58,7 +59,7 @@ const Dashboard = ({ onBack }) => {
                 setAnalysisResult({
                     risk_level: data.risk_level,
                     confidence: data.confidence || 0,
-                    explanation: data.recommendation || 'Analysis complete. The AI has assessed your respiratory patterns.',
+                    explanation: data.recommendation || 'Sentinel analysis complete. The acoustic signature has been synchronized with the urban health database.',
                     suggestions: [
                         data.recommendation || 'Follow the recommendation provided.',
                         'Monitor your breathing patterns regularly.',
@@ -84,19 +85,96 @@ const Dashboard = ({ onBack }) => {
     };
 
     return (
-        <div className="dashboard-page" style={{ paddingTop: '6rem', minHeight: '100vh', backgroundColor: '#f8fafc' }}>
+        <div className="dashboard-page" style={{ paddingTop: '4.5rem', minHeight: '100vh', backgroundColor: '#f8fafc' }}>
             {/* Main Dashboard Content */}
             <main className="dashboard-main container">
-                <motion.div
-                    className="dashboard-header"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                    style={{ textAlign: 'center', marginBottom: '3rem' }}
-                >
-                    <h1 style={{ fontSize: '2.5rem', fontWeight: 800, color: '#0f172a', marginBottom: '0.5rem' }}>Respiratory Risk Analysis</h1>
-                    <p style={{ color: '#64748b', fontSize: '1.125rem' }}>Assess your breathing patterns using our advanced AI biomarkers.</p>
-                </motion.div>
+                {view === 'result' && analysisResult && (
+                    <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+                        <motion.nav
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 0.4 }}
+                            style={{
+                                marginBottom: '1.5rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.25rem',
+                                marginLeft: '-0.5rem'
+                            }}
+                        >
+                            <button
+                                onClick={resetAnalysis}
+                                className="breadcrumb-button"
+                                style={{
+                                    background: 'none',
+                                    border: 'none',
+                                    color: '#64748b',
+                                    fontSize: '0.8125rem',
+                                    fontWeight: '600',
+                                    cursor: 'pointer',
+                                    padding: '0.25rem 0.5rem',
+                                    borderRadius: '0.5rem',
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '0.05em'
+                                }}
+                            >
+                                Dashboard
+                            </button>
+                            <ChevronRight size={14} color="#cbd5e1" />
+                            <button
+                                onClick={resetAnalysis}
+                                className="breadcrumb-button"
+                                style={{
+                                    background: 'none',
+                                    border: 'none',
+                                    color: '#64748b',
+                                    fontSize: '0.8125rem',
+                                    fontWeight: '600',
+                                    cursor: 'pointer',
+                                    padding: '0.25rem 0.5rem',
+                                    borderRadius: '0.5rem',
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '0.05em'
+                                }}
+                            >
+                                Analysis
+                            </button>
+                            <ChevronRight size={14} color="#cbd5e1" />
+                            <span style={{
+                                color: '#0f172a',
+                                fontSize: '0.8125rem',
+                                fontWeight: '800',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.05em',
+                                padding: '0.25rem 0.5rem'
+                            }}>
+                                Result
+                            </span>
+                        </motion.nav>
+
+                        <div className="result-view-container" style={{ paddingBottom: '4rem' }}>
+                            <ResultCard result={analysisResult} />
+
+                            <PersonalizedReport
+                                analysisResult={analysisResult}
+                                airQualityData={airQualityData}
+                            />
+                        </div>
+                    </div>
+                )}
+
+                {view !== 'result' && (
+                    <motion.div
+                        className="dashboard-header"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5 }}
+                        style={{ textAlign: 'center', marginBottom: '3rem' }}
+                    >
+                        <h1 style={{ fontSize: '2.5rem', fontWeight: 800, color: '#0f172a', marginBottom: '0.5rem' }}>UrbanVoice Acoustic Sentinel</h1>
+                        <p style={{ color: '#64748b', fontSize: '1.125rem' }}>Monitor urban acoustic health markers through our advanced semantic intelligence.</p>
+                    </motion.div>
+                )}
 
                 <div className="dashboard-grid">
                     {view === 'upload' && (
@@ -105,6 +183,7 @@ const Dashboard = ({ onBack }) => {
                             initial={{ opacity: 0, scale: 0.98 }}
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ duration: 0.4 }}
+                            style={{ maxWidth: '600px', margin: '0 auto' }}
                         >
                             <UploadCard onAnalyze={handleAnalyze} isAnalyzing={false} />
                             <div style={{ marginTop: '2rem' }}>
@@ -116,39 +195,11 @@ const Dashboard = ({ onBack }) => {
                     {view === 'loading' && (
                         <div className="loading-view fade-in-up">
                             <div className="card loading-card" style={{ maxWidth: '600px', margin: '0 auto', padding: '3rem' }}>
-                                <LoadingSpinner message="Analyzing respiratory signals..." />
+                                <LoadingSpinner message="Synchronizing urban acoustic metadata..." />
                             </div>
                         </div>
                     )}
 
-                    {view === 'result' && analysisResult && (
-                        <div className="result-view fade-in-up">
-                            <div className="result-actions" style={{ marginBottom: '1.5rem' }}>
-                                <button
-                                    className="btn-text"
-                                    onClick={resetAnalysis}
-                                    style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '0.5rem',
-                                        color: 'var(--color-primary)',
-                                        fontWeight: 600,
-                                        background: 'none',
-                                        border: 'none',
-                                        cursor: 'pointer'
-                                    }}
-                                >
-                                    <ArrowLeft size={16} />
-                                    <span>Analyze New Sample</span>
-                                </button>
-                            </div>
-                            <ResultCard result={analysisResult} />
-                            <PersonalizedReport 
-                                analysisResult={analysisResult} 
-                                airQualityData={airQualityData} 
-                            />
-                        </div>
-                    )}
 
                     {view === 'error' && (
                         <div className="error-view fade-in">

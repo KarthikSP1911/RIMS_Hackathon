@@ -21,7 +21,7 @@ const HistoryChart = ({ historyData }) => {
 
     return (
         <div className="card chart-card">
-            <h4 style={{ marginBottom: '1.5rem', fontWeight: '700', color: '#1e293b' }}>Respiratory Risk Trends</h4>
+            <h4 style={{ marginBottom: '1.5rem', fontWeight: '700', color: '#1e293b' }}>Urban Sentinel Health Trends</h4>
             <div style={{ width: '100%', height: 250 }}>
                 <ResponsiveContainer>
                     <LineChart data={data}>

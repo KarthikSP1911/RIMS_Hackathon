@@ -1,5 +1,5 @@
 """
-RespiraScan Complete ML Pipeline Execution Script
+UrbanVoice Sentinel Complete ML Pipeline Execution Script
 Runs all steps: Dataset -> Training -> Conversion -> Testing
 """
 
@@ -14,7 +14,7 @@ def print_header(title):
 
 
 def main():
-    print_header("RESPIRASCAN ML PIPELINE - COMPLETE EXECUTION")
+    print_header("URBANVOICE SENTINEL ML PIPELINE - COMPLETE EXECUTION")
     
     start_time = time.time()
     
@@ -33,15 +33,15 @@ def main():
         return
     
     # Step 2: Train Model
-    print_header("STEP 2/5: Training RespiraNet with 5-Fold CV")
+    print_header("STEP 2/5: Training SentinelNet with 5-Fold CV")
     try:
-        from train_model import RespiraNetTrainer
+        from train_model import SentinelNetTrainer
         import numpy as np
         
         X = np.load('models/X_mfcc.npy')
         y = np.load('models/y_risk.npy')
         
-        trainer = RespiraNetTrainer(
+        trainer = SentinelNetTrainer(
             n_folds=2,
             batch_size=16,
             epochs=5,
@@ -66,8 +66,8 @@ def main():
         from inference_pipeline import convert_to_torchscript
         
         convert_to_torchscript(
-            model_path='models/respira_net_v1.pt',
-            output_path='models/respira_net_ts.pt'
+            model_path='models/sentinel_net_v1.pt',
+            output_path='models/sentinel_net_ts.pt'
         )
         
         print("[OK] TorchScript conversion complete")
@@ -91,10 +91,10 @@ def main():
     # Step 5: Run Pipeline Tests
     print_header("STEP 5/5: Testing Complete Inference Pipeline")
     try:
-        from inference_pipeline import RespiraNetInference
+        from inference_pipeline import UrbanVoiceInference
         
-        inference = RespiraNetInference(
-            model_path='../models/respira_net_v1.pt',
+        inference = UrbanVoiceInference(
+            model_path='../models/sentinel_net_v1.pt',
             scaler_path='../models/scaler.pkl'
         )
         
@@ -116,8 +116,8 @@ def main():
     print("  [DIR] models/")
     print("     +-- X_mfcc.npy (10K samples)")
     print("     +-- y_risk.npy (labels)")
-    print("     +-- respira_net_v1.pt (trained model)")
-    print("     +-- respira_net_ts.pt (TorchScript)")
+    print("     +-- sentinel_net_v1.pt (trained model)")
+    print("     +-- sentinel_net_ts.pt (TorchScript)")
     print("     +-- scaler.pkl (normalization)")
     print("     +-- train_history.json (CV results)")
     print("     +-- demo_results.json (test predictions)")
