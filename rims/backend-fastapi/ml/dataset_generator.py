@@ -144,7 +144,7 @@ class RespiratoryDatasetGenerator:
         
         return X_mfcc, y_risk, metadata
     
-    def save_dataset(self, X_mfcc, y_risk, metadata, output_dir='../models'):
+    def save_dataset(self, X_mfcc, y_risk, metadata, output_dir='models'):
         """Save dataset to disk"""
         import os
         os.makedirs(output_dir, exist_ok=True)

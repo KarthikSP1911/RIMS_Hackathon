@@ -302,4 +302,4 @@ if __name__ == "__main__":
     
     model, results = trainer.train_cross_validation(X, y)
     
-    print("\n✅ Training complete!")
+    print("\n[OK] Training complete!")

@@ -11,8 +11,8 @@ inference = RespiraNetInference(
     model_path='models/respira_net_v1.pt',
     scaler_path='models/scaler.pkl'
 )
-print("✅ Model loaded successfully!")
-print("✅ PIPELINE COMPLETE - Ready for real audio testing!")
+print("[OK] Model loaded successfully!")
+print("[OK] PIPELINE COMPLETE - Ready for real audio testing!")
 print("\nModel files created:")
 print("  - models/respira_net_v1.pt (Trained model)")
 print("  - models/respira_net_ts.pt (TorchScript)")

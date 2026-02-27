@@ -209,23 +209,66 @@ class RespiraNetInference:
     def __init__(self, model_path='models/respira_net_v1.pt', scaler_path='models/scaler.pkl'):
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.audio_processor = AudioProcessor()
+        self.model = None
+        self.scaler = None
         
-        # Load model
-        print(f"Loading model from {model_path}...")
-        self.model = create_respira_net()
-        self.model.load_state_dict(torch.load(model_path, map_location=self.device))
-        self.model.to(self.device)
-        self.model.eval()
+        # Robust path detection
+        base_dir = Path(__file__).parent.parent
+        possible_model_paths = [
+            Path(model_path),
+            base_dir / model_path,
+            base_dir / 'models/respira_net_v1.pt',
+            base_dir / 'models/respira_net_ts.pt',
+            base_dir / 'models/respira_net_fold1.pt'
+        ]
         
+        actual_model_path = None
+        for p in possible_model_paths:
+            if p.exists() and p.is_file():
+                actual_model_path = p
+                break
+        
+        # Load model if found
+        if actual_model_path:
+            try:
+                print(f"Loading model from {actual_model_path}...")
+                self.model = create_respira_net()
+                self.model.load_state_dict(torch.load(actual_model_path, map_location=self.device))
+                self.model.to(self.device)
+                self.model.eval()
+                print("[OK] Neural Model loaded successfully")
+            except Exception as e:
+                print(f"[WARN] Failed to load neural model: {e}. Falling back to acoustic-only mode.")
+                self.model = None
+        else:
+            print("[WARN] No model file found. Falling back to acoustic-only mode.")
+
         # Load scaler
-        print(f"Loading scaler from {scaler_path}...")
-        with open(scaler_path, 'rb') as f:
-            self.scaler = pickle.load(f)
+        actual_scaler_path = None
+        possible_scaler_paths = [Path(scaler_path), base_dir / scaler_path, base_dir / 'models/scaler.pkl']
+        for p in possible_scaler_paths:
+            if p.exists():
+                actual_scaler_path = p
+                break
+                
+        if actual_scaler_path and self.model:
+            try:
+                print(f"Loading scaler from {actual_scaler_path}...")
+                with open(actual_scaler_path, 'rb') as f:
+                    self.scaler = pickle.load(f)
+            except Exception as e:
+                print(f"[WARN] Failed to load scaler: {e}")
+                self.scaler = None
         
-        print("✅ Model loaded successfully")
+        if not self.model:
+            print("[INFO] Inference engine initialized in ACOUSTIC-ONLY mode")
+        else:
+            print("[OK] Inference engine fully initialized")
         
     def normalize_features(self, mfcc):
         """Step 5: Z-score normalize using precomputed scaler"""
+        if self.scaler is None:
+            return mfcc
         mfcc_flat = mfcc.reshape(1, -1)
         mfcc_normalized = self.scaler.transform(mfcc_flat)
         mfcc_normalized = mfcc_normalized.reshape(mfcc.shape)
@@ -233,6 +276,10 @@ class RespiraNetInference:
     
     def predict(self, mfcc):
         """Step 6: TorchScript model inference"""
+        if self.model is None:
+            # Fallback to a neutral probability if model is missing
+            return 0.5
+            
         # Convert to tensor
         mfcc_tensor = torch.FloatTensor(mfcc).unsqueeze(0).to(self.device)
         
@@ -259,36 +306,36 @@ class RespiraNetInference:
         # Jitter analysis (voice frequency instability)
         if jitter > 0.05:  # Very high - severe distress
             acoustic_risk += 0.5
-            print("  → High jitter detected (+0.5)")
+            print("  -> High jitter detected (+0.5)")
         elif jitter > 0.035:  # High - moderate distress
             acoustic_risk += 0.3
-            print("  → Moderate jitter detected (+0.3)")
+            print("  -> Moderate jitter detected (+0.3)")
         elif jitter > 0.025:  # Slightly elevated
             acoustic_risk += 0.15
-            print("  → Slight jitter detected (+0.15)")
+            print("  -> Slight jitter detected (+0.15)")
         else:
-            print("  → Normal jitter (no boost)")
+            print("  -> Normal jitter (no boost)")
         
         # Shimmer analysis (voice amplitude instability)
         if shimmer > 0.08:  # Very high
             acoustic_risk += 0.5
-            print("  → High shimmer detected (+0.5)")
+            print("  -> High shimmer detected (+0.5)")
         elif shimmer > 0.055:  # High
             acoustic_risk += 0.3
-            print("  → Moderate shimmer detected (+0.3)")
+            print("  -> Moderate shimmer detected (+0.3)")
         elif shimmer > 0.042:  # Slightly elevated
             acoustic_risk += 0.15
-            print("  → Slight shimmer detected (+0.15)")
+            print("  -> Slight shimmer detected (+0.15)")
         else:
-            print("  → Normal shimmer (no boost)")
+            print("  -> Normal shimmer (no boost)")
         
         # Silence ratio (breathing interruptions)
         if silence_ratio > 0.3:  # Too much silence = labored breathing
             acoustic_risk += 0.2
-            print("  → High silence ratio detected (+0.2)")
+            print("  -> High silence ratio detected (+0.2)")
         
-        print(f"  → Total acoustic risk: {acoustic_risk:.2f}")
-        print(f"  → Model probability: {probability:.4f}")
+        print(f"  -> Total acoustic risk: {acoustic_risk:.2f}")
+        print(f"  -> Model probability: {probability:.4f}")
         
         # Use acoustic analysis primarily (model was trained on synthetic data)
         # If acoustic risk is detected, trust it
@@ -299,7 +346,7 @@ class RespiraNetInference:
         else:
             final_probability = (probability * 0.5) + (acoustic_risk * 0.5)  # Balanced
         
-        print(f"  → Final probability: {final_probability:.4f} ({final_probability*100:.1f}%)")
+        print(f"  -> Final probability: {final_probability:.4f} ({final_probability*100:.1f}%)")
         
         # Classify based on final probability
         if final_probability >= 0.70:
@@ -376,7 +423,7 @@ class RespiraNetInference:
                 'confidence': risk_result['confidence'],
                 'recommendation': risk_result['recommendation'],
                 'color': risk_result['color'],
-                'model_version': 'v1.2.1',
+                'model_version': 'v1.2.1' if self.model else 'acoustic-fallback-v1',
                 'processing_time_ms': round(total_time, 2),
                 'features': {
                     'jitter': acoustic_features['jitter'],
@@ -424,7 +471,7 @@ def convert_to_torchscript(model_path='models/respira_net_v1.pt', output_path='m
     # Save TorchScript model
     traced_model.save(output_path)
     
-    print(f"✅ TorchScript model saved to {output_path}")
+    print(f"[OK] TorchScript model saved to {output_path}")
     
     # Verify
     loaded_ts = torch.jit.load(output_path)

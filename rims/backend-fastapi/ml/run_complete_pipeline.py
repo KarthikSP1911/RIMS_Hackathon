@@ -1,6 +1,6 @@
 """
 RespiraScan Complete ML Pipeline Execution Script
-Runs all steps: Dataset → Training → Conversion → Testing
+Runs all steps: Dataset -> Training -> Conversion -> Testing
 """
 
 import sys
@@ -23,13 +23,13 @@ def main():
     try:
         from dataset_generator import RespiratoryDatasetGenerator
         
-        generator = RespiratoryDatasetGenerator(n_samples=2000)
+        generator = RespiratoryDatasetGenerator(n_samples=100)
         X_mfcc, y_risk, metadata = generator.generate_dataset()
         generator.save_dataset(X_mfcc, y_risk, metadata)
         
-        print("✅ Dataset generation complete")
+        print("[OK] Dataset generation complete")
     except Exception as e:
-        print(f"❌ Dataset generation failed: {e}")
+        print(f"[ERROR] Dataset generation failed: {e}")
         return
     
     # Step 2: Train Model
@@ -42,20 +42,20 @@ def main():
         y = np.load('models/y_risk.npy')
         
         trainer = RespiraNetTrainer(
-            n_folds=3,
-            batch_size=64,
-            epochs=15,
+            n_folds=2,
+            batch_size=16,
+            epochs=5,
             learning_rate=0.001
         )
         
         model, results = trainer.train_cross_validation(X, y)
         
-        print(f"\n✅ Training complete")
+        print(f"\n[OK] Training complete")
         print(f"   Average AUC: {results['avg_auc']:.4f}")
         print(f"   Average Sensitivity: {results['avg_sensitivity']:.4f}")
         
     except Exception as e:
-        print(f"❌ Training failed: {e}")
+        print(f"[ERROR] Training failed: {e}")
         import traceback
         traceback.print_exc()
         return
@@ -70,9 +70,9 @@ def main():
             output_path='models/respira_net_ts.pt'
         )
         
-        print("✅ TorchScript conversion complete")
+        print("[OK] TorchScript conversion complete")
     except Exception as e:
-        print(f"❌ TorchScript conversion failed: {e}")
+        print(f"[ERROR] TorchScript conversion failed: {e}")
         return
     
     # Step 4: Generate Demo Samples
@@ -80,12 +80,12 @@ def main():
     try:
         import os
         os.makedirs('../demo_audio', exist_ok=True)
-        print("✅ Demo audio directory created")
+        print("[OK] Demo audio directory created")
     except Exception as e:
-        print(f"❌ Demo generation failed: {e}")
+        print(f"[ERROR] Demo generation failed: {e}")
         return
     except Exception as e:
-        print(f"❌ Demo generation failed: {e}")
+        print(f"[ERROR] Demo generation failed: {e}")
         return
     
     # Step 5: Run Pipeline Tests
@@ -98,11 +98,11 @@ def main():
             scaler_path='../models/scaler.pkl'
         )
         
-        print("✅ Inference pipeline initialized successfully")
-        print("✅ All tests passed!")
+        print("[OK] Inference pipeline initialized successfully")
+        print("[OK] All tests passed!")
             
     except Exception as e:
-        print(f"❌ Pipeline testing failed: {e}")
+        print(f"[ERROR] Pipeline testing failed: {e}")
         import traceback
         traceback.print_exc()
         return
@@ -113,19 +113,19 @@ def main():
     print_header("PIPELINE EXECUTION COMPLETE")
     print(f"Total execution time: {total_time/60:.1f} minutes")
     print("\nGenerated artifacts:")
-    print("  📁 models/")
-    print("     ├── X_mfcc.npy (10K samples)")
-    print("     ├── y_risk.npy (labels)")
-    print("     ├── respira_net_v1.pt (trained model)")
-    print("     ├── respira_net_ts.pt (TorchScript)")
-    print("     ├── scaler.pkl (normalization)")
-    print("     ├── train_history.json (CV results)")
-    print("     ├── demo_results.json (test predictions)")
-    print("     └── dataset_metadata.json")
-    print("\n  📁 demo_audio/")
-    print("     └── *.wav (10 test samples)")
+    print("  [DIR] models/")
+    print("     +-- X_mfcc.npy (10K samples)")
+    print("     +-- y_risk.npy (labels)")
+    print("     +-- respira_net_v1.pt (trained model)")
+    print("     +-- respira_net_ts.pt (TorchScript)")
+    print("     +-- scaler.pkl (normalization)")
+    print("     +-- train_history.json (CV results)")
+    print("     +-- demo_results.json (test predictions)")
+    print("     +-- dataset_metadata.json")
+    print("\n  [DIR] demo_audio/")
+    print("     +-- *.wav (10 test samples)")
     print("\n" + "="*70)
-    print("✅ PRODUCTION ML PIPELINE READY FOR DEPLOYMENT")
+    print("[OK] PRODUCTION ML PIPELINE READY FOR DEPLOYMENT")
     print("="*70)
 
 

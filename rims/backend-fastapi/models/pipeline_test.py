@@ -53,9 +53,9 @@ def generate_demo_audio_samples():
             'parameters': scenario
         })
         
-        print(f"  ✓ Generated {filename}")
+        print(f"  [OK] Generated {filename}")
     
-    print(f"\n✅ Generated {len(demo_samples)} demo audio files")
+    print(f"\n[OK] Generated {len(demo_samples)} demo audio files")
     return demo_samples
 
 
@@ -95,7 +95,7 @@ def test_inference_pipeline(demo_samples):
                 'prediction': result
             })
         else:
-            print(f"  ❌ Error: {result['error']}")
+            print(f"  [ERROR] Error: {result['error']}")
     
     avg_time = total_time / len(demo_samples)
     print(f"\n{'='*60}")
@@ -103,7 +103,7 @@ def test_inference_pipeline(demo_samples):
     print(f"{'='*60}")
     print(f"Total samples processed: {len(results)}")
     print(f"Average processing time: {avg_time:.2f}ms")
-    print(f"Target: <2000ms ({'✅ PASS' if avg_time < 2000 else '❌ FAIL'})")
+    print(f"Target: <2000ms ({'[PASS]' if avg_time < 2000 else '[FAIL]'})")
     
     # Save results
     with open('demo_results.json', 'w') as f:
@@ -116,7 +116,7 @@ def test_inference_pipeline(demo_samples):
             'results': results
         }, f, indent=2)
     
-    print(f"\n✅ Results saved to demo_results.json")
+    print(f"\n[OK] Results saved to demo_results.json")
     
     return results
 
@@ -133,29 +133,29 @@ def verify_model_requirements():
     model_path = Path('respira_net_v1.pt')
     if model_path.exists():
         model_size_mb = model_path.stat().st_size / (1024**2)
-        print(f"✓ Model file exists: {model_size_mb:.2f}MB")
+        print(f"[OK] Model file exists: {model_size_mb:.2f}MB")
         checks.append(('Model size <10MB', model_size_mb < 10, f"{model_size_mb:.2f}MB"))
     else:
-        print(f"✗ Model file not found")
+        print(f"[ERROR] Model file not found")
         checks.append(('Model exists', False, 'Not found'))
     
     # Check TorchScript model
     ts_path = Path('respira_net_ts.pt')
     if ts_path.exists():
         ts_size_mb = ts_path.stat().st_size / (1024**2)
-        print(f"✓ TorchScript model exists: {ts_size_mb:.2f}MB")
+        print(f"[OK] TorchScript model exists: {ts_size_mb:.2f}MB")
         checks.append(('TorchScript model exists', True, f"{ts_size_mb:.2f}MB"))
     else:
-        print(f"✗ TorchScript model not found")
+        print(f"[ERROR] TorchScript model not found")
         checks.append(('TorchScript model exists', False, 'Not found'))
     
     # Check scaler
     scaler_path = Path('scaler.pkl')
     if scaler_path.exists():
-        print(f"✓ Scaler file exists")
+        print(f"[OK] Scaler file exists")
         checks.append(('Scaler exists', True, 'Found'))
     else:
-        print(f"✗ Scaler file not found")
+        print(f"[ERROR] Scaler file not found")
         checks.append(('Scaler exists', False, 'Not found'))
     
     # Check training history
@@ -167,14 +167,14 @@ def verify_model_requirements():
         avg_auc = history.get('avg_auc', 0)
         avg_sensitivity = history.get('avg_sensitivity', 0)
         
-        print(f"✓ Training history exists")
+        print(f"[OK] Training history exists")
         print(f"  Average AUC: {avg_auc:.4f}")
         print(f"  Average Sensitivity: {avg_sensitivity:.4f}")
         
-        checks.append(('AUC ≥0.93', avg_auc >= 0.93, f"{avg_auc:.4f}"))
-        checks.append(('Sensitivity ≥0.91', avg_sensitivity >= 0.91, f"{avg_sensitivity:.4f}"))
+        checks.append(('AUC >= 0.93', avg_auc >= 0.93, f"{avg_auc:.4f}"))
+        checks.append(('Sensitivity >= 0.91', avg_sensitivity >= 0.91, f"{avg_sensitivity:.4f}"))
     else:
-        print(f"✗ Training history not found")
+        print(f"[ERROR] Training history not found")
         checks.append(('Training history exists', False, 'Not found'))
     
     # Summary
@@ -183,15 +183,15 @@ def verify_model_requirements():
     print(f"{'='*60}")
     
     for check_name, passed, value in checks:
-        status = "✅ PASS" if passed else "❌ FAIL"
+        status = "[PASS]" if passed else "[FAIL]"
         print(f"{check_name:30s} {status:10s} {value}")
     
     all_passed = all(check[1] for check in checks)
     print(f"\n{'='*60}")
     if all_passed:
-        print("✅ ALL REQUIREMENTS MET")
+        print("[OK] ALL REQUIREMENTS MET")
     else:
-        print("❌ SOME REQUIREMENTS NOT MET")
+        print("[ERROR] SOME REQUIREMENTS NOT MET")
     print(f"{'='*60}")
     
     return all_passed
@@ -218,9 +218,9 @@ def main():
     print("="*60)
     
     if all_passed:
-        print("✅ Production ML pipeline ready for deployment!")
+        print("[OK] Production ML pipeline ready for deployment!")
     else:
-        print("⚠️  Some requirements not met. Review output above.")
+        print("[WARNING]  Some requirements not met. Review output above.")
     
     print("\nGenerated files:")
     print("  - demo_audio/*.wav (10 test samples)")
