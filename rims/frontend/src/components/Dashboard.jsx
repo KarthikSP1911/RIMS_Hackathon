@@ -8,6 +8,8 @@ import UploadCard from './UploadCard';
 import ResultCard from './ResultCard';
 import LoadingSpinner from './LoadingSpinner';
 import HistoryChart from './HistoryChart';
+import AirQualityCard from './AirQualityCard';
+import PersonalizedReport from './PersonalizedReport';
 import { motion } from 'framer-motion';
 
 const Dashboard = ({ onBack }) => {
@@ -15,6 +17,7 @@ const Dashboard = ({ onBack }) => {
     const [analysisResult, setAnalysisResult] = useState(null);
     const [errorHeader, setErrorHeader] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+    const [airQualityData, setAirQualityData] = useState(null);
 
     const handleAnalyze = async (file) => {
         setView('loading');
@@ -104,6 +107,9 @@ const Dashboard = ({ onBack }) => {
                             transition={{ duration: 0.4 }}
                         >
                             <UploadCard onAnalyze={handleAnalyze} isAnalyzing={false} />
+                            <div style={{ marginTop: '2rem' }}>
+                                <AirQualityCard onDataUpdate={setAirQualityData} />
+                            </div>
                         </motion.div>
                     )}
 
@@ -137,6 +143,10 @@ const Dashboard = ({ onBack }) => {
                                 </button>
                             </div>
                             <ResultCard result={analysisResult} />
+                            <PersonalizedReport 
+                                analysisResult={analysisResult} 
+                                airQualityData={airQualityData} 
+                            />
                         </div>
                     )}
 
