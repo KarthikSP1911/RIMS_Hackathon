@@ -24,6 +24,7 @@ import Dashboard from './components/Dashboard';
 import Login from './components/Login';
 import Register from './components/Register';
 import ProtectedRoute from './components/ProtectedRoute';
+import Chatbot from './components/Chatbot';
 
 // --- Shared Components ---
 
@@ -364,6 +365,7 @@ function App() {
       <div className="App">
         <FullScreenLoader />
         <Navbar />
+        <Chatbot />
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
