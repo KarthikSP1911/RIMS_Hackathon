@@ -3,6 +3,7 @@ from pydantic import BaseModel
 import sys
 import os
 import httpx
+from app.core.config import settings
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../ml'))
 
 # Pydantic models for request validation
@@ -146,7 +147,7 @@ async def get_air_quality(location_id: int = 5574):
         if time.time() - air_quality_cache[cache_key]["timestamp"] < CACHE_DURATION:
             return air_quality_cache[cache_key]["data"]
     
-    api_key = "5c252cf69847cc858100854d6ab3eecb1681f6aebef74ad115aadf7dc51678ab"
+    api_key = settings.OPENAQ_API_KEY
     latest_url = f"https://api.openaq.org/v3/locations/{location_id}/latest"
     
     try:
@@ -179,7 +180,7 @@ async def get_air_quality(location_id: int = 5574):
 @router.post("/generate-report")
 async def generate_personalized_report(request: ReportRequest):
     """Generate personalized health report using Gemini AI"""
-    gemini_api_key = "AIzaSyDpuiBztF-uYwHS5wJCdoXyNI8AS8nrkkM"
+    gemini_api_key = settings.GEMINI_API_KEY
     
     # Construct prompt for Gemini
     prompt = f"""You are the UrbanVoice Sentinel health advisor. Generate a personalized, authoritative health synthesis based on the following acoustic and environmental data:
@@ -239,7 +240,7 @@ class ChatRequest(BaseModel):
 @router.post("/chat")
 async def chat_with_ai(request: ChatRequest):
     """Chat endpoint for user queries about respiratory health"""
-    gemini_api_key = "AIzaSyDpuiBztF-uYwHS5wJCdoXyNI8AS8nrkkM"
+    gemini_api_key = settings.GEMINI_API_KEY
     
     # System context for the chatbot
     system_context = """You are a helpful AI assistant for UrbanVoice Sentinel, an urban acoustic health monitoring platform. 
